@@ -22,8 +22,8 @@ export function EnhancedResultsDisplay({
   
   if (topDishes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-        <div className="bg-white rounded-xl shadow-lg p-8 max-w-md">
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#252525]">
+        <div className="bg-[#FBEB35] rounded-xl shadow-lg p-8 max-w-md">
           <div className="text-6xl mb-4">😅</div>
           <h2 className="text-3xl font-bold mb-4 text-gray-800">No Matches Found!</h2>
           <p className="text-lg text-gray-600 mb-8">
@@ -32,9 +32,9 @@ export function EnhancedResultsDisplay({
           {onStartNewSession && (
             <Button 
               onClick={onStartNewSession} 
-              className="px-6 py-3 text-lg font-semibold rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
+              className="w-full py-4 text-lg font-semibold rounded-md bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all duration-500 group"
             >
-              <RefreshCw className="w-5 h-5 mr-2" />
+              <RefreshCw className="w-5 h-5 mr-2 transition-transform duration-500 group-hover:rotate-180" />
               Start New Session
             </Button>
           )}
@@ -154,10 +154,10 @@ export function EnhancedResultsDisplay({
             <Button 
               onClick={onStartNewSession} 
               size="lg"
-              className="px-8 py-3 text-lg font-semibold rounded-md bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all duration-300"
+              className="w-full py-4 text-lg font-semibold rounded-md bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all duration-500 group"
             >
-              <RefreshCw className="w-5 h-5 mr-2" />
-              Start New Flavor Session
+              <RefreshCw className="w-5 h-5 mr-2 transition-transform duration-500 group-hover:rotate-180" />
+              Start New Session
             </Button>
           )}
           

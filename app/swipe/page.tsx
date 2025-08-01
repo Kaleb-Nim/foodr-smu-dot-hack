@@ -102,7 +102,7 @@ export default function Page() {
     };
 
     return (
-        <div className="bg-background w-full h-screen flex flex-col gap-24 justify-center items-center">
+        <div className="bg-[#252525] w-full h-screen flex flex-col gap-24 justify-center items-center">
             <div>
                 <CardTitle>Swipe left for no, swipe right for yes, heart for superlike</CardTitle>
             </div>

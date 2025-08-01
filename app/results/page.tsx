@@ -76,9 +76,9 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-green-50 flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-[#252525]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 bg-[#F1204A] border-[#2DCCD3] mx-auto mb-4"></div>
           <p className="text-gray-600">Loading results...</p>
         </div>
       </div>
@@ -113,11 +113,11 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-green-50">
-      {resultsData.message && (
+      {/* {resultsData.message && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
           <p>{resultsData.message}</p>
         </div>
-      )}
+      )} */}
       <EnhancedResultsDisplay
         topDishes={resultsData.topDishes}
         groupMembers={resultsData.groupMembers}
