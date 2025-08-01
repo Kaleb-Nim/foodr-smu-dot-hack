@@ -26,8 +26,8 @@ const mapPreferenceToEnum = (preference: string): FoodRating => {
   }
 };
 
-export async function POST(req: NextRequest, { params }: { params: { groupId: string } }) {
-  const sessionId = params.groupId;
+export async function POST(req: NextRequest, { params }: { params: { groupid: string } }) {
+  const sessionId = params.groupid;
 
   try {
     // 3. Validate Request Body
