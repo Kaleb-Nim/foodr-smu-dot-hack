@@ -94,64 +94,67 @@ export function EnhancedResultsDisplay({
         </div>
 
         {/* Separator */}
-        {remainingDishes.length > 0 && (
-          <div className="mb-8">
-            <Separator className="my-8" />
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Other Great Options</h2>
-              <p className="text-gray-600">More dishes your group might enjoy</p>
-            </div>
-          </div>
-        )}
-
-        {/* Other Dishes Grid */}
-        {remainingDishes.length > 0 && (
-          <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {(showAllDishes ? remainingDishes : remainingDishes.slice(0, 3)).map((dish, index) => (
-                <DishCard
-                  key={dish.id}
-                  dish={dish}
-                  rank={index + 2}
-                  maxScore={maxScore}
-                  onSeeNearbyLocations={onSeeNearbyLocations}
-                />
-              ))}
-            </div>
-
-            {/* Show More/Less Button */}
-            {remainingDishes.length > 3 && (
-              <div className="text-center mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAllDishes(!showAllDishes)}
-                  className="px-6 py-2"
-                >
-                  {showAllDishes ? (
-                    <>
-                      <ChevronUp className="w-4 h-4 mr-2" />
-                      Show Less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="w-4 h-4 mr-2" />
-                      Show All {remainingDishes.length} Options
-                    </>
-                  )}
-                </Button>
+        <Separator className="my-8 opacity-25" />
+        <div>
+        <div className="h-screen flex justify-center items-center">
+          <div>
+            {remainingDishes.length > 0 && (
+              <div className="mb-8">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-[#e9e9e9] mb-2">Other Great Options</h2>
+                </div>
               </div>
             )}
-          </div>
-        )}
+
+            {/* Other Dishes Grid */}
+            {remainingDishes.length > 0 && (
+              <div className="mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {(showAllDishes ? remainingDishes : remainingDishes.slice(0, 3)).map((dish, index) => (
+                    <DishCard
+                      key={dish.id}
+                      dish={dish}
+                      rank={index + 2}
+                      maxScore={maxScore}
+                      onSeeNearbyLocations={onSeeNearbyLocations}
+                    />
+                  ))}
+                </div>
+
+                {/* Show More/Less Button */}
+                {remainingDishes.length > 3 && (
+                  <div className="text-center mt-6">
+                    <Button
+                      onClick={() => setShowAllDishes(!showAllDishes)}
+                      className="px-6 py-2 bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all duration-300"
+                    >
+                      {showAllDishes ? (
+                        <>
+                          <ChevronUp className="w-4 h-4 mr-2" />
+                          Show Less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-4 h-4 mr-2" />
+                          Show All {remainingDishes.length} Options
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+            </div>
+        </div>
+        </div>
 
         {/* Footer Actions */}
-        <div className="text-center pt-8 border-t border-gray-200">
+        <div className="text-center pt-8">
           {onStartNewSession && (
             <Button 
               onClick={onStartNewSession} 
-              variant="outline"
               size="lg"
-              className="px-8 py-3 text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              className="px-8 py-3 text-lg font-semibold rounded-md bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all duration-300"
             >
               <RefreshCw className="w-5 h-5 mr-2" />
               Start New Flavor Session

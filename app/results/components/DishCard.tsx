@@ -49,8 +49,10 @@ export function DishCard({
         <div className="flex items-center gap-2 border-black relative w-[56px]">
           {remainingCount > 0 && (
               <div 
-                className={`w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center left-[${offset + to_add}px]`}
-                style={{zIndex: zidx}}
+                className={`w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center`}
+                style={{
+                  zIndex: zidx,
+                }}
               >
                 <span className="text-sm font-semibold text-gray-600">
                   +{remainingCount}
@@ -61,8 +63,11 @@ export function DishCard({
             offset += to_add;
             zidx--;
             return(
-              <Avatar key={member.id} className={`absolute w-8 h-8 border-4 border-white shadow-sm left-[${offset}px]`}
-                style={{zIndex: zidx}}
+              <Avatar key={member.id} className="absolute w-8 h-8 border-4 border-white shadow-sm"
+                style={{
+                  zIndex: zidx,
+                  left: `${offset}px`
+                }}
               >
                 <AvatarImage src={member.avatarUrl} alt={member.name} />
                 <AvatarFallback className="bg-blue-100 text-sm font-semibold text-blue-700">
@@ -148,7 +153,7 @@ export function DishCard({
         :
           <Button
             onClick={() => handleClick(dish.cuisine)}
-            className="w-full bg-[#F1204A] hover:bg-[#F1204A]/75 transition text-white"
+            className="w-full bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all text-white"
           >
             See nearby locations ({dish.restaurantCount})
           </Button>
