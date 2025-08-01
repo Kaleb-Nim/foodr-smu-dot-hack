@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import FoodMap from './FoodMap';
 
 interface MapModalProps {
@@ -35,6 +36,19 @@ export function MapModal({ isOpen, onClose, selectedLocation, allLocations }: Ma
             allLocations={allLocations}
           />
         </div>
+        {selectedLocation && (
+          <div className="p-4 border-t border-gray-200">
+            <Button asChild className="w-full">
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${selectedLocation.lat},${selectedLocation.lon}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open in Google Maps
+              </a>
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

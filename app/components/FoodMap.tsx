@@ -174,21 +174,17 @@ export default function FoodMap({ selectedLocation, allLocations }: {
           </Popup>
         )}
 
-      {/* Popup for selected place */}
-      {selected && (
-        <Popup
-          longitude={selected.lon}
-          latitude={selected.lat}
-          anchor="top"
-          onClose={() => setSelected(null)}
-          closeOnClick={false}
+      {/* Selected Location Marker (if different from current location) */}
+      {selectedLocation && (
+        <Marker
+          longitude={selectedLocation.lon}
+          latitude={selectedLocation.lat}
+          color="red" // Highlight selected location in red
         >
-          <div>
-            <strong>{selected.name}</strong>
-            <p>Type: {selected.amenity}</p>
-            <p>Price: {selectedPrice !== null ? selectedPrice : 'Loading...'}</p>
+          <div className="relative -top-14 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-sm font-semibold whitespace-nowrap">
+            {selectedLocation.name}
           </div>
-        </Popup>
+        </Marker>
       )}
     </Map>
     </div>
