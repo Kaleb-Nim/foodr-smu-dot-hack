@@ -37,6 +37,30 @@ export default function HoldingRoomPage() {
       return;
     }
 
+    const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
+    const checkGroupStatus = async () => {
+      try {
+        const res = await fetch(`/api/groups/${groupCode}/has-started`);
+        const data = await res.json();
+
+        if (res.ok && data.hasStarted) {
+          if (userId) {
+            router.push(`/swipe?groupId=${groupCode}&userId=${userId}`);
+          } else {
+            setMessage("User ID not found. Cannot redirect to swipe page.");
+          }
+          return true; // Indicate that redirection happened
+        } else if (!res.ok) {
+          setMessage(`Error checking group status: ${data.error || "Unknown error"}`);
+        }
+      } catch (err) {
+        console.error("Failed to check group status:", err);
+        setMessage("Failed to check group status.");
+      }
+      return false; // Indicate no redirection
+    };
+
     const fetchMembers = async () => {
       try {
         const res = await fetch(`/api/groups/${groupCode}/members`);
@@ -66,13 +90,49 @@ export default function HoldingRoomPage() {
       }
     };
 
+    // Initial fetches
     fetchMembers();
     generateQr();
-    const intervalId = setInterval(fetchMembers, 3000);
-    return () => clearInterval(intervalId);
-  }, [groupCode]);
 
-  const handleStartParty = () => router.push(`/map?partyId=${groupCode}`);
+    // Polling for group status and members
+    const intervalId = setInterval(async () => {
+      const redirected = await checkGroupStatus();
+      if (!redirected) {
+        fetchMembers();
+      } else {
+        clearInterval(intervalId); // Stop polling if redirected
+      }
+    }, 3000); // Poll every 3 seconds
+
+    return () => clearInterval(intervalId);
+  }, [groupCode, router]);
+
+  const handleStartParty = async () => {
+    const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+    if (!userId) {
+      setMessage("User ID not found or not in browser environment. Cannot start party.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/groups/${groupCode}/start-party`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage("Party started successfully!");
+        // Polling in useEffect will handle redirection
+      } else {
+        setMessage(`Error starting party: ${data.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Failed to start party.");
+    }
+  };
 
   const handleLeaveGroup = async () => {
     const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;

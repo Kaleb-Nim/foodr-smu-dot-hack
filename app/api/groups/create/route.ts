@@ -34,14 +34,10 @@ export async function POST(request: Request) {
             }
         }
 
-        // Generate a new unique ID for the creator
-        const creatorId = `user-${Math.random().toString(36).substring(2, 9)}`;
-
         // Insert new group with the creator as the first member
         console.log("Attempting to insert new group with code:", code);
         const newLeader = await prisma.user.create({
             data: {
-                id: creatorId,
                 name: userName,
                 blobIcon: blobIcon,
             },
@@ -67,7 +63,7 @@ export async function POST(request: Request) {
         const qrCodeDataUrl = await QRCode.toDataURL(joinUrl);
 
         // Redirect to holding room
-        return NextResponse.json({ code, qrCodeDataUrl, redirectUrl: `/holding-room/${code}`, userId: creatorId });
+        return NextResponse.json({ code, qrCodeDataUrl, redirectUrl: `/holding-room/${code}`, userId: newLeader.id });
     } catch (error) {
         console.error("Error creating group:", error);
         return NextResponse.json({ error: "Failed to create group" }, { status: 500 });

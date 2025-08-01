@@ -24,6 +24,7 @@ model Group {
     leader_id_fk    String    @unique
     leader          User      @relation("GroupLeader", fields: [leader_id_fk], references: [id])
     members         User[]    @relation("GroupMembership")
+    hasStarted      Boolean   @default(false)
 }
 
 model Food {
