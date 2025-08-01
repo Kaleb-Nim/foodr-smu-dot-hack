@@ -54,7 +54,7 @@ export function EnhancedResultsDisplay({
   );
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 bg-[#252525]">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
