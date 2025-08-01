@@ -1,78 +1,97 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Swiper, { SwiperCard } from "./components/Swiper";
 
 const fakeSwiperCardData = [
-  {
-    id: "uuid-1",
-    title: "Luna",
-    description: "Aspiring astrologer with a love for indie folk music and chai lattes.",
-    imageUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-2",
-    title: "Max",
-    description: "Software engineer by day, amateur chef by night. Obsessed with tacos and sci-fi novels.",
-    imageUrl: "https://images.unsplash.com/photo-1543610892-0b19f79b8ce8?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-3",
-    title: "Chloe",
-    description: "Travel blogger exploring hidden gems and capturing moments. Fluent in sarcasm.",
-    imageUrl: "https://images.unsplash.com/photo-1508214751196-edcd4a9697ad?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-4",
-    title: "Leo",
-    description: "Outdoor enthusiast who loves hiking, bouldering, and anything with a mountain view.",
-    imageUrl: "https://images.unsplash.com/photo-1552058544-baa4360b06c1?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-5",
-    title: "Sophie",
-    description: "Bookworm and cat mom. Can often be found in a cozy nook with a good fantasy novel.",
-    imageUrl: "https://images.unsplash.com/photo-1529626465618-a89aab5dfcee?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-6",
-    title: "Ethan",
-    description: "Musician (guitarist) and coffee connoisseur. Always looking for new jam sessions.",
-    imageUrl: "https://images.unsplash.com/photo-1534008757871-6c1dc48b5efd?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-7",
-    title: "Mia",
-    description: "Passionate about sustainable living and loves thrifting for vintage finds.",
-    imageUrl: "https://images.unsplash.com/photo-1542155823-3889151240ff?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "uuid-8",
-    title: "Noah",
-    description: "Fitness enthusiast and gamer. Always up for a challenge, in the gym or online.",
-    imageUrl: "https://images.unsplash.com/photo-1522529599131-01cd7a07c570?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
+    {
+        "id": "3c2579f7-f62c-42f0-a07b-4c4aafcc3f81",
+        "name": "Burger",
+        "image_path": "/images/dishes/burger.png"
+    },
+    {
+        "id": "cea4b94f-aca2-4933-8653-6b5cb6907ea3",
+        "name": "Chicken Rice",
+        "image_path": "/images/dishes/chicken_rice.png"
+    },
+    {
+        "id": "3cec8f5b-8260-496c-8ed6-683ca6c1fc67",
+        "name": "Dim Sum",
+        "image_path": "/images/dishes/dim_sum.png"
+    },
+    {
+        "id": "b0ce1b13-1b77-4b75-ab9e-2d014f59c08d",
+        "name": "Hotpot",
+        "image_path": "/images/dishes/hotpot.png"
+    },
+    {
+        "id": "556fcf80-9122-4003-9607-9cbc62c2509e",
+        "name": "Pasta",
+        "image_path": "/images/dishes/pasta.png"
+    },
+    {
+        "id": "8a192a85-1c4c-48f0-8faa-1e1eca4a6557",
+        "name": "Prata",
+        "image_path": "/images/dishes/prata.png"
+    },
+    {
+        "id": "7d5e6b50-a366-496e-b497-d28449e8eb04",
+        "name": "Ramen",
+        "image_path": "/images/dishes/ramen.png"
+    },
+    {
+        "id": "319de175-c664-458e-a407-98610141c1d5",
+        "name": "Sushi",
+        "image_path": "/images/dishes/sushi.png"
+    },
+    {
+        "id": "a69063a1-86eb-45c2-814d-0a15c5600f1b",
+        "name": "Taco",
+        "image_path": "/images/dishes/taco.png"
+    },
+    {
+        "id": "d3866abb-a408-4c09-b5a2-942aea37a580",
+        "name": "Thai Green Curry",
+        "image_path": "/images/dishes/thai_green_curry.png"
+    }
 ];
 
 export default function Page() {
 
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const userId = searchParams.get("userId");
+    const groupId = searchParams.get("groupId");
+
+    const handleRequest = async (id: string, preference: string) => {
+        void fetch(`http://localhost:3000/api/group-sessions/${groupId}/swipe`, {
+            method: "POST",
+            body: JSON.stringify({
+                "userId": userId,
+                "dishId": id,
+                "preference": preference
+            })
+        });
+    }
 
     const handleAllCardsSwiped = () => {
         // You might fetch more data, navigate to another page,
         // or display a "You've seen everyone!" message.
         console.log("No more cards to show! Time to load more or display an end screen.");
-        router.push("/")
+        router.push(`/results?code=${groupId}`)
     };
 
     const handleSwipeLeft = (card: SwiperCard) => {
-        console.log(`Swiped LEFT on ${card.title}`);
+        console.log(`Swiped LEFT on ${card.name}`);
         // Logic for "no" or "dislike"
+        void handleRequest(card.id, "like");
     };
 
     const handleSwipeRight = (card: SwiperCard) => {
-        console.log(`Swiped RIGHT on ${card.title}`);
+        console.log(`Swiped RIGHT on ${card.name}`);
         // Logic for "yes" or "like"
+        void handleRequest(card.id, "dislike");
     };
 
     return (

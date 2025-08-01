@@ -13,13 +13,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { cn } from "@/lib/utils"; // Assuming you have this utility from Shadcn setup
 
 export interface SwiperCard {
   id: string;
-  title: string;
-  description: string;
-  imageUrl?: string;
+  name: string;
+  description?: string;
+  image_path: string;
 }
 
 interface SwiperProps {
@@ -39,6 +38,7 @@ const Swiper = ({ data, onSwipeLeft, onSwipeRight, onFinish }: SwiperProps) => {
     scale: 1,
     display: "block",
   })); // Create a spring for each card
+        
 
   // Create a gesture handler
   const bind = useDrag(
