@@ -6,6 +6,7 @@ import { DetailedScoreBar } from '@/components/ui/score-bar';
 import { RestaurantCountWithTooltip } from './RestaurantCount';
 import { EnhancedMatchedFoodItem, GroupMember } from '@/lib/types';
 import { cn } from '@/lib/utils';
+import { Loader2Icon } from 'lucide-react';
 
 interface DishCardProps {
   dish: EnhancedMatchedFoodItem;
@@ -23,68 +24,53 @@ export function DishCard({
   className,
 }: DishCardProps) {
   const [showAllMembers, setShowAllMembers] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const getRankBadgeColor = (rank: number) => {
-    if (rank === 1) return 'bg-yellow-500 text-white';
-    if (rank === 2) return 'bg-gray-400 text-white';
-    if (rank === 3) return 'bg-amber-600 text-white';
-    return 'bg-blue-500 text-white';
+    return 'bg-[#F1204A] text-white';
   };
+
+  const handleClick = (cuisine: string) => {
+    setIsLoading(true);
+    onSeeNearbyLocations(cuisine);
+    setIsLoading(false);
+  }
 
   const renderLikedBy = (likedBy: GroupMember[]) => {
     if (likedBy.length === 0) return null;
 
     const displayMembers = showAllMembers ? likedBy : likedBy.slice(0, 2);
     const remainingCount = likedBy.length - 2;
+    let offset = 0;
+    let zidx = 1000;
+    const to_add = 16;
 
     return (
-      <div className="mt-3">
-        <div className="flex items-center flex-wrap gap-2">
-          {displayMembers.map((member) => (
-            <div key={member.id} className="flex items-center gap-2 bg-gray-50 rounded-full px-2 py-1">
-              <Avatar className="w-8 h-8 border-2 border-white shadow-sm">
+      <div className="bg-[#FBEB35]">
+        <div className="flex items-center gap-2 border-black relative w-[56px]">
+          {remainingCount > 0 && (
+              <div 
+                className={`w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center left-[${offset + to_add}px]`}
+                style={{zIndex: zidx}}
+              >
+                <span className="text-sm font-semibold text-gray-600">
+                  +{remainingCount}
+                </span>
+              </div>
+          )}
+          {displayMembers.map((member) => {
+            offset += to_add;
+            zidx--;
+            return(
+              <Avatar key={member.id} className={`absolute w-8 h-8 border-4 border-white shadow-sm left-[${offset}px]`}
+                style={{zIndex: zidx}}
+              >
                 <AvatarImage src={member.avatarUrl} alt={member.name} />
                 <AvatarFallback className="bg-blue-100 text-sm font-semibold text-blue-700">
                   {member.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium text-gray-700 truncate max-w-[80px]">
-                {member.name}
-              </span>
-            </div>
-          ))}
-          
-          {!showAllMembers && remainingCount > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAllMembers(true)}
-              className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 h-auto border-0 text-xs"
-            >
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-gray-600">
-                  +{remainingCount}
-                </span>
-              </div>
-              <span className="text-gray-600">
-                others
-              </span>
-            </Button>
-          )}
-          
-          {showAllMembers && likedBy.length > 2 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAllMembers(false)}
-              className="bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 h-auto border-0 text-xs text-gray-600"
-            >
-              Show less
-            </Button>
-          )}
-        </div>
-        
-        <div className="text-xs text-gray-500 mt-2">
-          {likedBy.length === 1 ? '1 person likes this dish' : `${likedBy.length} people like this dish`}
+            )
+          })}
         </div>
       </div>
     );
@@ -92,17 +78,9 @@ export function DishCard({
 
   return (
     <Card className={cn(
-      'bg-white shadow-lg border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] relative',
+      'bg-[#FBEB35] shadow-lg border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] relative pt-0',
       className
     )}>
-      {/* Rank Badge */}
-      <div className={cn(
-        'absolute top-3 left-3 z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg',
-        getRankBadgeColor(rank)
-      )}>
-        {rank}
-      </div>
-
       {/* Food Image */}
       <CardHeader className="p-0 relative">
         <div className="w-full aspect-[4/3] bg-gray-50 overflow-hidden">
@@ -111,6 +89,12 @@ export function DishCard({
             alt={dish.name}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />
+        </div>
+        <div className={cn(
+          'absolute top-3 left-3 z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-lg ',
+          getRankBadgeColor(rank)
+        )}>
+          {rank}
         </div>
         {/* Restaurant Count Badge */}
         <div className="absolute top-3 right-3">
@@ -123,23 +107,18 @@ export function DishCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-6">
+      <CardContent className="px-4">
         {/* Dish Info */}
-        <CardTitle className="text-xl font-bold mb-1 line-clamp-1">
-          {dish.name}
-        </CardTitle>
-        <CardDescription className="text-sm text-gray-600 mb-3">
-          {dish.cuisine} cuisine
-        </CardDescription>
+        <div className="w-full flex flex-row justify-between items-center relative">
+          <CardTitle className="text-xl font-bold line-clamp-1">
+            {dish.name}
+          </CardTitle>
+          {renderLikedBy(dish.likedBy)}
+        </div>
+        <CardDescription>{dish.likedBy.length === 1 ? '1 person likes this dish' : `${dish.likedBy.length} people like this dish`}</CardDescription>
         
-        {dish.description && (
-          <p className="text-sm text-gray-700 mb-4 line-clamp-2">
-            {dish.description}
-          </p>
-        )}
-
         {/* Score Bar */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">Group Score</span>
             <span className="text-xs text-gray-500">Max: {maxScore}</span>
@@ -152,19 +131,28 @@ export function DishCard({
             size="md"
             animated={true}
           />
-        </div>
+        </div> */}
 
         {/* Liked By */}
-        {renderLikedBy(dish.likedBy)}
 
         {/* Action Button */}
         <div className="mt-6">
+        {isLoading ? 
           <Button
-            onClick={() => onSeeNearbyLocations(dish.cuisine)}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => handleClick(dish.cuisine)}
+            className="w-full bg-[#F1204A] text-white"
+            disabled
+          >
+            <Loader2Icon className="animate-spin"/>
+          </Button>
+        :
+          <Button
+            onClick={() => handleClick(dish.cuisine)}
+            className="w-full bg-[#F1204A] hover:bg-[#F1204A]/75 transition text-white"
           >
             See nearby locations ({dish.restaurantCount})
           </Button>
+        }
         </div>
       </CardContent>
     </Card>

@@ -29,7 +29,7 @@ export function RestaurantCount({
 
   return (
     <div className={cn(
-      'inline-flex items-center gap-1.5 bg-blue-100 text-blue-800 rounded-full font-medium',
+      'inline-flex items-center gap-1.5 bg-[#F1204A] text-[#e9e9e9] rounded-full font-bold',
       sizeClasses[size],
       className
     )}>
@@ -54,9 +54,9 @@ export function RestaurantCountWithTooltip({
   }
 
   return (
-    <div className="relative group">
+    <div className="relative group ">
       <RestaurantCount {...props} />
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-[#F1204A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
         {props.count} {props.cuisine} restaurants within walking distance of SMU campus
         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
       </div>

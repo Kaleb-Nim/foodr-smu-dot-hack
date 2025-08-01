@@ -56,51 +56,42 @@ export function EnhancedResultsDisplay({
   return (
     <div className="min-h-screen p-4 bg-[#252525]">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Trophy className="w-10 h-10 text-yellow-500" />
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
-              Top Flavor Picks
-            </h1>
-            <Trophy className="w-10 h-10 text-yellow-500" />
-          </div>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Based on your group's preferences, here are the top-ranked dishes around SMU campus
-          </p>
-          
-          {/* Group Stats */}
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              <span>{totalMembers} group members</span>
+
+        <div className="w-full h-screen flex flex-col justify-center items-center">
+
+          {/* Winner Card - Highlighted */}
+          {topMatch && (
+            <div className="mb-12">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold text-[#e9e9e9]-800 mb-2">Your Choice</h2>
+              </div>
+              
+              <div className="w-full flex justify-center">
+                <DishCard
+                  dish={topMatch}
+                  rank={1}
+                  maxScore={maxScore}
+                  onSeeNearbyLocations={onSeeNearbyLocations}
+                  className="border-4 border-yellow-400 shadow-2xl transform scale-105"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
-              <span>{totalSwipes} total swipes</span>
+          )}
+
+          <div className="text-center">
+            {/* Group Stats */}
+            <div className="flex items-center justify-center gap-6 text-sm">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-[#e9e9e9]" />
+                <span className="text-[#e9e9e9]">{totalMembers} group members</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-[#2DCCD3] rounded-full"></span>
+                <span className="text-[#e9e9e9]">{totalSwipes} total swipes</span>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Winner Card - Highlighted */}
-        {topMatch && (
-          <div className="mb-12">
-            <div className="text-center mb-6">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">🏆 Group Favorite</h2>
-              <p className="text-lg text-gray-600">The clear winner with the highest score!</p>
-            </div>
-            
-            <div className="max-w-2xl mx-auto">
-              <DishCard
-                dish={topMatch}
-                rank={1}
-                maxScore={maxScore}
-                onSeeNearbyLocations={onSeeNearbyLocations}
-                className="border-4 border-yellow-400 shadow-2xl transform scale-105"
-              />
-            </div>
-          </div>
-        )}
 
         {/* Separator */}
         {remainingDishes.length > 0 && (
