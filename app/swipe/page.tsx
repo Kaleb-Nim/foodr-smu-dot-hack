@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Swiper, { SwiperCard } from "./components/Swiper";
 
 const fakeSwiperCardData = [
@@ -55,10 +56,13 @@ const fakeSwiperCardData = [
 
 export default function Page() {
 
+    const router = useRouter();
+
     const handleAllCardsSwiped = () => {
-    console.log("No more cards to show! Time to load more or display an end screen.");
-    // You might fetch more data, navigate to another page,
-    // or display a "You've seen everyone!" message.
+        // You might fetch more data, navigate to another page,
+        // or display a "You've seen everyone!" message.
+        console.log("No more cards to show! Time to load more or display an end screen.");
+        router.push("/")
     };
 
     const handleSwipeLeft = (card: SwiperCard) => {
