@@ -1,11 +1,34 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import GroupManager from './components/GroupManager'; // Keep GroupManager for now, will refactor later
+import GroupManager from './components/GroupManager';
+import CreateGroupModal from './components/CreateGroupModal';
 
 export default function Home() {
   const [mode, setMode] = useState<'none' | 'create' | 'join'>('none');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [userName, setUserName] = useState(''); // State to hold user name for modal
+  const [currentGroupName, setCurrentGroupName] = useState(''); // State to hold group name for GroupManager
+
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('userName');
+    if (storedUserName) {
+      setUserName(storedUserName);
+    }
+  }, []);
+
+  const handleCreatePartyClick = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateGroup = (groupName: string, leaderName: string) => {
+    localStorage.setItem('userName', leaderName); // Save leader's name
+    setUserName(leaderName);
+    setIsCreateModalOpen(false);
+    setCurrentGroupName(groupName); // Store group name in state
+    setMode('create'); // Set mode to 'create' to render GroupManager
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -20,7 +43,7 @@ export default function Home() {
           <h2 className="text-lg font-bold mb-4">Party Mode</h2>
           <div className="space-y-4">
             <button
-              onClick={() => setMode('create')}
+              onClick={handleCreatePartyClick}
               className="w-full py-3 bg-blue-800 text-white rounded-md text-lg font-semibold hover:bg-blue-900 transition-colors"
             >
               Start Party
@@ -36,9 +59,16 @@ export default function Home() {
 
         {mode !== 'none' && (
           <div className="p-6 bg-white">
-            <GroupManager initialMode={mode} onBack={() => setMode('none')} />
+            <GroupManager initialMode={mode} onBack={() => setMode('none')} userName={userName} groupName={currentGroupName} />
           </div>
         )}
+
+        <CreateGroupModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreateGroup={handleCreateGroup}
+          initialUserName={userName}
+        />
 
         <div className="p-4 text-center bg-gray-200">
           <Link href="/map" className="text-blue-600 hover:underline">

@@ -22,6 +22,10 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
         });
 
         if (group) {
+            if (group.leaderId === userId) {
+                return NextResponse.json({ error: "Leader cannot leave the group" }, { status: 403 });
+            }
+
             const currentMembers = group.members as Member[];
             const updatedMembers = currentMembers.filter(
                 (member: Member) => member.id !== userId

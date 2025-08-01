@@ -20,7 +20,11 @@ export async function GET(request: Request, { params }: { params: { code: string
             return NextResponse.json({ error: "Group not found" }, { status: 404 });
         }
 
-        return NextResponse.json({ members: group.members });
+        return NextResponse.json({
+            name: group.name,
+            leaderId: group.leaderId,
+            members: group.members
+        });
     } catch (error) {
         console.error("Error fetching group members:", error);
         return NextResponse.json({ error: "Failed to fetch group members" }, { status: 500 });

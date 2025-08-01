@@ -9,57 +9,26 @@ import NameInputModal from './NameInputModal';
 interface GroupManagerProps {
     initialMode: 'create' | 'join' | 'none';
     onBack: () => void;
+    userName: string; // Add userName to props
+    groupName?: string; // Add groupName to props, optional as it's only for create mode
 }
 
-export default function GroupManager({ initialMode, onBack }: GroupManagerProps) {
+export default function GroupManager({ initialMode, onBack, userName, groupName }: GroupManagerProps) {
     const [groupCode, setGroupCode] = useState("");
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
     const [joinCode, setJoinCode] = useState("");
     const [message, setMessage] = useState("");
-    const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+    const [isNameModalOpen, setIsNameModalOpen] = useState(false); // This might not be needed anymore
     const [userId, setUserId] = useState("");
-    const [userName, setUserName] = useState("");
-    const [nameSaved, setNameSaved] = useState(false); // New state to track if name is saved
     const router = useRouter();
     // const [socket, setSocket] = useState<Socket | null>(null); // Removed socket state
-
-    useEffect(() => {
-        let storedUserName = localStorage.getItem('userName');
-        if (storedUserName) {
-            setUserName(storedUserName);
-        }
-        setNameSaved(false); // Ensure nameSaved is false initially to trigger modal
-
-        // Removed Socket.IO connection and event listeners as they are no longer needed.
-        // The joinGroup logic is now handled by the API route and SSE.
-    }, []);
-
-    useEffect(() => {
-        if (initialMode !== 'none' && !nameSaved) { // Open modal if a mode is selected and name is not saved
-            setIsNameModalOpen(true);
-        } else {
-            setIsNameModalOpen(false);
-        }
-    }, [initialMode, nameSaved]); // Add nameSaved back to dependency array
-
-    const handleSaveName = (name: string) => {
-        setUserName(name);
-        localStorage.setItem('userName', name);
-        setNameSaved(true);
-        setMessage("Name saved!");
-        setIsNameModalOpen(false); // Close modal after saving name
-
-        if (initialMode === 'create') {
-            handleCreateGroup();
-        }
-    };
 
     const handleCreateGroup = useCallback(async () => {
         setMessage("");
         setGroupCode("");
         setQrCodeDataUrl("");
-        if (!userName) { // Ensure name is available
-            setMessage("Please save your name first.");
+        if (!userName || !groupName) { // Ensure name and group name are available from props
+            setMessage("User name or group name is missing.");
             return;
         }
         try {
@@ -68,7 +37,7 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userName }),
+                body: JSON.stringify({ userName, groupName }), // Pass groupName
             });
             const data = await response.json();
             if (response.ok) {
@@ -76,9 +45,7 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
                 setQrCodeDataUrl(data.qrCodeDataUrl);
                 setMessage("Party created successfully!");
                 localStorage.setItem('userId', data.userId); // Store the userId returned from the API
-                // The creator is already added to the group in the database by the API.
-                // The holding room page will fetch the members, including the creator.
-                // No need to emit 'joinGroup' from here for the creator.
+                localStorage.setItem('isLeader', 'true'); // Mark as leader
                 router.push(`${data.redirectUrl}`); // Redirect to holding room with userName
             } else {
                 setMessage(`Error: ${data.error}`);
@@ -87,7 +54,16 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
             console.error("Failed to create party:", error);
             setMessage("Failed to create party.");
         }
-    }, [userName, router]);
+    }, [userName, groupName, router]);
+
+    useEffect(() => {
+        // Removed Socket.IO connection and event listeners as they are no longer needed.
+        // The joinGroup logic is now handled by the API route and SSE.
+        if (initialMode === 'create' && userName && groupName) {
+            console.log("GroupManager: Calling handleCreateGroup with:", { userName, groupName });
+            handleCreateGroup();
+        }
+    }, [initialMode, userName, groupName, handleCreateGroup]); // Add handleCreateGroup to dependency array
 
     const handleJoinGroup = useCallback(async () => {
         setMessage("");
@@ -125,7 +101,7 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
 
     return (
         <div className="p-4">
-            {initialMode === 'create' && nameSaved && (
+            {initialMode === 'create' && (
                 <div className="bg-yellow-200 p-6 rounded-lg shadow-md text-center">
                     <h3 className="text-xl font-bold mb-4">Party will be created shortly...</h3>
                     {message && (
@@ -136,7 +112,7 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
                 </div>
             )}
 
-            {initialMode === 'join' && nameSaved && (
+            {initialMode === 'join' && (
                 <div className="bg-yellow-200 p-6 rounded-lg shadow-md">
                     <h3 className="text-xl font-bold mb-4 text-center">Join Party</h3>
                     <input
@@ -149,7 +125,6 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
                     <button
                         onClick={handleJoinGroup}
                         className="w-full py-3 bg-blue-800 text-white rounded-md text-lg font-semibold hover:bg-blue-900 transition-colors"
-                        disabled={!nameSaved}
                     >
                         Join Party
                     </button>
@@ -160,13 +135,6 @@ export default function GroupManager({ initialMode, onBack }: GroupManagerProps)
                     )}
                 </div>
             )}
-
-            <NameInputModal
-                isOpen={isNameModalOpen}
-                onClose={onBack}
-                onSaveName={handleSaveName}
-                initialName={userName}
-            />
         </div>
     );
 }

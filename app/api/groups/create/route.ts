@@ -15,10 +15,13 @@ function generateRandomCode(length: number) {
 
 export async function POST(request: Request) {
     try {
-        const { userName } = await request.json();
+        console.log("Received request to create group.");
+        const { userName, groupName } = await request.json();
+        console.log("Request body:", { userName, groupName });
 
-        if (!userName) {
-            return NextResponse.json({ error: "User name is required" }, { status: 400 });
+        if (!userName || !groupName) {
+            console.log("Missing userName or groupName.");
+            return NextResponse.json({ error: "User name and group name are required" }, { status: 400 });
         }
 
         let code: string = "";
@@ -37,10 +40,14 @@ export async function POST(request: Request) {
         const creatorId = `user-${Math.random().toString(36).substring(2, 9)}`;
 
         // Insert new group with the creator as the first member
+        console.log("Attempting to insert new group with code:", code);
         await db.insert(groups).values({
             code: code,
+            name: groupName, // Store the group name
+            leaderId: creatorId, // Store the leader ID
             members: [{ id: creatorId, name: userName }],
         });
+        console.log("Group inserted successfully into DB.");
 
         // WebSocket notification is now handled by the client-side Socket.IO emit
         // when the group is created successfully. The server-side API no longer needs to send HTTP notification.
