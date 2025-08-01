@@ -94,12 +94,19 @@ export default function Page() {
         void handleRequest(card.id, "dislike");
     };
 
+    const handleSuperLike = (card: SwiperCard) => {
+        console.log(`Superlike on ${card.name}`);
+        // Logic for "yes" or "like"
+        void handleRequest(card.id, "superlike");
+    };
+
     return (
-        <div className="w-full h-full flex justify-center items-center">
+        <div className="w-full h-screen flex justify-center items-center">
             <Swiper
                 data={fakeSwiperCardData}
                 onSwipeLeft={handleSwipeLeft}
                 onSwipeRight={handleSwipeRight}
+                onSuperLike={handleSuperLike}
                 onFinish={handleAllCardsSwiped}
             />
         </div>

@@ -13,24 +13,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export interface SwiperCard {
   id: string;
   name: string;
-  description?: string;
-  image_path: string;
+  description?: string; image_path: string;
 }
 
 interface SwiperProps {
   data: SwiperCard[];
   onSwipeLeft?: (card: SwiperCard) => void;
   onSwipeRight?: (card: SwiperCard) => void;
+  onSuperLike: (card: SwiperCard) => void;
   onFinish?: () => void;
 }
 
 const SWIPE_THRESHOLD = 150; // Pixels to define a swipe
 
-const Swiper = ({ data, onSwipeLeft, onSwipeRight, onFinish }: SwiperProps) => {
+const Swiper = ({ data, onSwipeLeft, onSwipeRight, onSuperLike, onFinish }: SwiperProps) => {
   const [gone] = useState(() => new Set()); // The set of all cards that are flicked out
   const [props, api] = useSprings(data.length, (i) => ({
     x: 0,
@@ -38,7 +39,11 @@ const Swiper = ({ data, onSwipeLeft, onSwipeRight, onFinish }: SwiperProps) => {
     scale: 1,
     display: "block",
   })); // Create a spring for each card
-        
+
+  const handleSuperLike = (index: number) => {
+    gone.add(index);
+    void onSuperLike(data[index]);
+  }
 
   // Create a gesture handler
   const bind = useDrag(
@@ -107,20 +112,23 @@ const Swiper = ({ data, onSwipeLeft, onSwipeRight, onFinish }: SwiperProps) => {
             className="h-full w-full cursor-grab active:cursor-grabbing"
           >
             <Card className="h-full w-full flex flex-col justify-between overflow-hidden">
-              {data[i].imageUrl && (
+              {data[i].image_path && (
                 <div
                   className="h-2/3 w-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${data[i].imageUrl})` }}
+                  style={{ backgroundImage: `url(${data[i].image_path})` }}
                 ></div>
               )}
               <CardHeader className="flex-grow">
                 <CardTitle className="text-xl font-bold">
-                  {data[i].title}
+                  {data[i].name}
                 </CardTitle>
                 <CardDescription className="text-gray-500">
                   {data[i].description}
                 </CardDescription>
               </CardHeader>
+              <CardContent>
+                <Button onClick={() => handleSuperLike(i)}>Superlike</Button>
+              </CardContent>
               {/* You can add CardContent and CardFooter if needed */}
             </Card>
           </animated.div>
