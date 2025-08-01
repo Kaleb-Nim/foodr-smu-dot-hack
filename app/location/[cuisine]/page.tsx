@@ -1,10 +1,5 @@
-"use client";
-
-import React from 'react';
 import { LocationHeader } from '../components/LocationHeader';
-import { LocationList } from '../components/LocationList';
-import { SMU_RESTAURANT_DATA } from '@/data/smu-restaurants';
-import { notFound } from 'next/navigation';
+import CuisineLocationClientPage from './components/CuisineLocationClientPage';
 
 interface LocationPageProps {
   params: {
@@ -12,25 +7,16 @@ interface LocationPageProps {
   };
 }
 
-export default function CuisineLocationPage({ params }: LocationPageProps) {
-  const { cuisine } = params;
-  
-  // Decode the cuisine parameter (in case it's URL encoded)
+export default async function CuisineLocationPage({ params }: LocationPageProps) {
+  const { cuisine } = await params;
   const decodedCuisine = decodeURIComponent(cuisine);
-  
-  // Find the restaurant data for this cuisine
-  const restaurantData = SMU_RESTAURANT_DATA[decodedCuisine];
-  
-  if (!restaurantData) {
-    notFound();
-  }
 
   const title = `Top Locations for ${decodedCuisine} cuisine`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-green-50">
       <LocationHeader title={title} showBackButton={true} />
-      <LocationList restaurants={restaurantData.locations} />
+      <CuisineLocationClientPage cuisine={decodedCuisine} />
     </div>
   );
 }

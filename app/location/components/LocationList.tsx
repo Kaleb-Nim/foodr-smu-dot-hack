@@ -6,6 +6,7 @@ interface Restaurant {
   area: string;
   distance: string;
   priceRange: string;
+  imageUrl?: string;
 }
 
 interface LocationListProps {
@@ -32,6 +33,7 @@ export function LocationList({ restaurants, className }: LocationListProps) {
             area={restaurant.area}
             distance={restaurant.distance}
             priceRange={restaurant.priceRange}
+            image={restaurant.imageUrl}
           />
         ))}
       </div>

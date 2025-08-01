@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowUp } from 'lucide-react';
@@ -21,25 +21,12 @@ export function LocationCard({
   image,
   className,
 }: LocationCardProps) {
-  // Generate placeholder image based on restaurant type
-  const getPlaceholderImage = () => {
-    if (name.toLowerCase().includes('chicken') || name.toLowerCase().includes('hainanese')) {
-      return "/images/dishes/chicken_rice.png";
-    } else if (name.toLowerCase().includes('sushi') || name.toLowerCase().includes('japanese')) {
-      return "/images/dishes/sushi.png";
-    } else if (name.toLowerCase().includes('ramen') || name.toLowerCase().includes('noodle')) {
-      return "/images/dishes/ramen.png";
-    } else if (name.toLowerCase().includes('burger') || name.toLowerCase().includes('american')) {
-      return "/images/dishes/burger.png";
-    } else if (name.toLowerCase().includes('pasta') || name.toLowerCase().includes('italian')) {
-      return "/images/dishes/pasta.png";
-    } else {
-      // Default foodr logo for generic restaurants
-      return "/images/Logo_foodr.png";
-    }
-  };
+  const [imageError, setImageError] = useState(false);
 
-  const placeholderImage = image || getPlaceholderImage();
+  // If there's an image error or no image provided, do not render the card
+  if (imageError || !image) {
+    return null;
+  }
 
   return (
     <Card className={cn(
@@ -51,13 +38,10 @@ export function LocationCard({
           {/* Restaurant Image */}
           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
             <img
-              src={placeholderImage}
+              src={image}
               alt={name}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/images/Logo_foodr.png";
-              }}
+              onError={() => setImageError(true)} // Set imageError to true on error
             />
           </div>
 
