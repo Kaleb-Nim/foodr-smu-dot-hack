@@ -1,0 +1,1 @@
+ALTER TABLE "afterproject_groups" ADD COLUMN "members" jsonb DEFAULT '[]'::jsonb NOT NULL;
