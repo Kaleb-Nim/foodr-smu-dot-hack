@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import Swiper, { SwiperCard } from "./components/Swiper";
+import { CardTitle } from "@/components/ui/card";
 
 const fakeSwiperCardData = [
     {
@@ -101,7 +102,10 @@ export default function Page() {
     };
 
     return (
-        <div className="w-full h-screen flex justify-center items-center">
+        <div className="bg-background w-full h-screen flex flex-col gap-24 justify-center items-center">
+            <div>
+                <CardTitle>Swipe left for no, swipe right for yes, heart for superlike</CardTitle>
+            </div>
             <Swiper
                 data={fakeSwiperCardData}
                 onSwipeLeft={handleSwipeLeft}
