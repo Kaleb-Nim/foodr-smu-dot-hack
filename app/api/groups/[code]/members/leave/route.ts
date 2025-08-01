@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/db';
-import { groups } from '@/src/db/schema';
-import { eq } from 'drizzle-orm';
+import prisma from '@/lib/prisma';
 
 interface Member {
     id: string;
@@ -17,23 +15,29 @@ export async function POST(req: NextRequest, { params }: { params: { code: strin
     }
 
     try {
-        const group = await db.query.groups.findFirst({
-            where: eq(groups.code, groupCode),
+        const group = await prisma.group.findFirst({
+            where: { code: groupCode },
+            include: { members: true },
         });
 
         if (group) {
-            if (group.leaderId === userId) {
+            if (group.leader_id_fk === userId) {
                 return NextResponse.json({ error: "Leader cannot leave the group" }, { status: 403 });
             }
 
-            const currentMembers = group.members as Member[];
-            const updatedMembers = currentMembers.filter(
-                (member: Member) => member.id !== userId
-            );
+            // Disconnect the user from the group
+            await prisma.group.update({
+                where: { id: group.id },
+                data: {
+                    members: {
+                        disconnect: { id: userId },
+                    },
+                },
+            });
 
-            await db.update(groups)
-                .set({ members: updatedMembers })
-                .where(eq(groups.code, groupCode));
+            // Optionally, delete the user if they are no longer part of any group
+            // This depends on your application's logic for user lifecycle
+            // For now, we'll just disconnect them from the group.
 
             console.log(`Removed user ${userId} from group ${groupCode} in DB.`);
 

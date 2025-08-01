@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/src/db";
-import { groups } from "@/src/db/schema";
-import { eq } from "drizzle-orm";
+import prisma from '@/lib/prisma';
 
 export async function GET(request: Request, { params }: { params: { code: string } }) {
     try {
@@ -12,8 +10,9 @@ export async function GET(request: Request, { params }: { params: { code: string
             return NextResponse.json({ error: "Group code is required" }, { status: 400 });
         }
 
-        const group = await db.query.groups.findFirst({
-            where: (groups, { eq }) => eq(groups.code, code),
+        const group = await prisma.group.findFirst({
+            where: { code: code },
+            include: { members: true },
         });
 
         if (!group) {
@@ -22,7 +21,7 @@ export async function GET(request: Request, { params }: { params: { code: string
 
         return NextResponse.json({
             name: group.name,
-            leaderId: group.leaderId,
+            leaderId: group.leader_id_fk,
             members: group.members
         });
     } catch (error) {

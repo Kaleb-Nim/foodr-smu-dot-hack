@@ -1,0 +1,51 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("POSTGRES_URL")
+}
+
+model User {
+    id        String   @id @default(uuid())
+    name      String
+    blobIcon  String?
+    ledGroup  Group?   @relation("GroupLeader")
+    memberOf  Group[]  @relation("GroupMembership")
+    ratings   Ratings[]  @relation("UserRatings")
+}
+
+model Group {
+    id              String    @id @default(uuid())
+    code            String    @unique
+    name            String
+    createdAt       DateTime  @default(now())
+    leader_id_fk    String    @unique
+    leader          User      @relation("GroupLeader", fields: [leader_id_fk], references: [id])
+    members         User[]    @relation("GroupMembership")
+}
+
+model Food {
+    id      String      @id @default(uuid())
+    name    String      @default("")
+    ratings  Ratings[]  @relation("FoodRatings")
+}
+
+enum FoodRating {
+    SUPER_LIKE
+    LIKE
+    DISLIKE
+}
+
+model Ratings {
+    id              String      @id @default(uuid())
+    person_id_fk    String
+    food_id_fk      String
+    rating          FoodRating  @default(LIKE)
+
+    person          User        @relation("UserRatings", fields: [person_id_fk], references: [id])
+    food            Food        @relation("FoodRatings", fields: [food_id_fk], references: [id])
+
+    @@unique([person_id_fk, food_id_fk])
+}

@@ -1,17 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface CreateGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onCreateGroup: (groupName: string, userName: string) => void;
+    onCreateGroup: (groupName: string) => void;
     initialUserName: string;
 }
 
 export default function CreateGroupModal({ isOpen, onClose, onCreateGroup, initialUserName }: CreateGroupModalProps) {
     const [groupName, setGroupName] = useState("");
+    // userName state is no longer directly used for group creation here, but kept for initial input
     const [userName, setUserName] = useState(initialUserName);
+    const router = useRouter();
 
     useEffect(() => {
         setUserName(initialUserName);
@@ -20,11 +23,14 @@ export default function CreateGroupModal({ isOpen, onClose, onCreateGroup, initi
     if (!isOpen) return null;
 
     const handleSubmit = () => {
-        if (groupName.trim() && userName.trim()) {
-            onCreateGroup(groupName, userName);
-            setGroupName(""); // Clear input after submission
+        if (groupName.trim()) {
+            // Store groupName in local storage for the next step (pick-blob)
+            localStorage.setItem("newGroupName", groupName);
+            // Redirect to the pick-blob page for user creation
+            router.push("/create-user/pick-blob");
+            onClose(); // Close the modal
         } else {
-            alert("Please enter both group name and your name.");
+            alert("Please enter a party name.");
         }
     };
 
@@ -45,25 +51,13 @@ export default function CreateGroupModal({ isOpen, onClose, onCreateGroup, initi
                         placeholder="Enter party name"
                     />
                 </div>
-                <div className="mb-6">
-                    <label htmlFor="userName" className="block text-gray-700 text-sm font-bold mb-2">
-                        Your Name:
-                    </label>
-                    <input
-                        type="text"
-                        id="userName"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
-                        placeholder="Enter your name"
-                    />
-                </div>
+                {/* Removed userName input as it's handled in the new flow */}
                 <div className="flex items-center justify-between">
                     <button
                         onClick={handleSubmit}
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     >
-                        Create Party
+                        Next
                     </button>
                     <button
                         onClick={onClose}

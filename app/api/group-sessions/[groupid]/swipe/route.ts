@@ -1,10 +1,6 @@
-// In: app/api/group-sessions/[groupId]/swipe/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/db';
-import { groups, groupSwipes } from '@/src/db/schema';
-import { eq } from 'drizzle-orm';
+import prisma from '@/lib/prisma';
 
-// UPDATED: Simplified request body type
 interface SwipeRequestBody {
     userId: string;
     dishId: string;
@@ -31,8 +27,9 @@ export async function POST(req: NextRequest, { params }: { params: { groupId: st
         }
 
         // 2. Authorization
-        const group = await db.query.groups.findFirst({
-            where: eq(groups.id, sessionId),
+        const group = await prisma.group.findFirst({
+            where: { id: sessionId },
+            include: { members: true },
         });
 
         if (!group) {
@@ -45,16 +42,21 @@ export async function POST(req: NextRequest, { params }: { params: { groupId: st
         }
 
         // 3. Database Upsert Operation
-        await db.insert(groupSwipes).values({
-            sessionId: sessionId,
-            userId: userId,
-            dishId: dishId,
-            preference: preference,
-        }).onConflictDoUpdate({
-            target: [groupSwipes.userId, groupSwipes.dishId, groupSwipes.sessionId],
-            set: {
-                preference: preference // Update preference on re-swipe
-            }
+        await prisma.ratings.upsert({
+            where: {
+                person_id_fk_food_id_fk: {
+                    person_id_fk: userId,
+                    food_id_fk: dishId,
+                },
+            },
+            update: {
+                rating: preference === 'like' ? 'LIKE' : 'DISLIKE',
+            },
+            create: {
+                person_id_fk: userId,
+                food_id_fk: dishId,
+                rating: preference === 'like' ? 'LIKE' : 'DISLIKE',
+            },
         });
 
         // 4. Success

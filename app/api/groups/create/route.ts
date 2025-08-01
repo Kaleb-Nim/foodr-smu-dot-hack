@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/src/db";
-import { groups } from "@/src/db/schema";
+import prisma from '@/lib/prisma';
 import QRCode from "qrcode";
-import { sql } from "drizzle-orm";
 
 function generateRandomCode(length: number) {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -16,8 +14,8 @@ function generateRandomCode(length: number) {
 export async function POST(request: Request) {
     try {
         console.log("Received request to create group.");
-        const { userName, groupName } = await request.json();
-        console.log("Request body:", { userName, groupName });
+        const { userName, groupName, blobIcon } = await request.json();
+        console.log("Request body:", { userName, groupName, blobIcon });
 
         if (!userName || !groupName) {
             console.log("Missing userName or groupName.");
@@ -28,8 +26,8 @@ export async function POST(request: Request) {
         let isUnique = false;
         while (!isUnique) {
             code = generateRandomCode(6);
-            const existingGroup = await db.query.groups.findFirst({
-                where: (groups, { eq }) => eq(groups.code, code),
+            const existingGroup = await prisma.group.findFirst({
+                where: { code: code },
             });
             if (!existingGroup) {
                 isUnique = true;
@@ -41,11 +39,23 @@ export async function POST(request: Request) {
 
         // Insert new group with the creator as the first member
         console.log("Attempting to insert new group with code:", code);
-        await db.insert(groups).values({
-            code: code,
-            name: groupName, // Store the group name
-            leaderId: creatorId, // Store the leader ID
-            members: [{ id: creatorId, name: userName }],
+        const newLeader = await prisma.user.create({
+            data: {
+                id: creatorId,
+                name: userName,
+                blobIcon: blobIcon,
+            },
+        });
+
+        await prisma.group.create({
+            data: {
+                code: code,
+                name: groupName,
+                leader_id_fk: newLeader.id,
+                members: {
+                    connect: { id: newLeader.id },
+                },
+            },
         });
         console.log("Group inserted successfully into DB.");
 
@@ -57,7 +67,7 @@ export async function POST(request: Request) {
         const qrCodeDataUrl = await QRCode.toDataURL(joinUrl);
 
         // Redirect to holding room
-        return NextResponse.json({ code, qrCodeDataUrl, redirectUrl: `/holding-room/${code}?userName=${userName}`, userId: creatorId });
+        return NextResponse.json({ code, qrCodeDataUrl, redirectUrl: `/holding-room/${code}?userName=${userName}&blobIcon=${blobIcon}`, userId: creatorId });
     } catch (error) {
         console.error("Error creating group:", error);
         return NextResponse.json({ error: "Failed to create group" }, { status: 500 });
