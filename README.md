@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+# Foodr
+
+## problem
+
+Product Positioning:
+The first world problem of indecisiveness of choosing what to eat in a group setting. 
+Imagine yourself after work/school and you’re going out with your friends/colleagues for dinner. You ask the group, “hey what do yall want to eat?” 
+“ Anything” → “Chicken rice?” → “Anything” , “Macdonalds?” → “Oh i ate that yst”
+This simple yet frustrating situation is one Singaporeans know all to well, eating up our time and patience. 
+
+## Solution
+
+Food tinder.
+
+To allow groups of friends, family, or colleagues to collectively decide on a food order by combining their individual swiping preferences, leading to a mutually agreeable "Flavor Match."
+
+Tech stack:
+React, TypeScript, NextJs, TailwindCSS, Supabase, ShadCN
