@@ -92,7 +92,7 @@ export async function POST(req: NextRequest, context: { params: Promise<{ groupi
     // Handle validation errors from Zod
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Invalid request body", details: error.errors },
+        { error: "Invalid request body", details: error },
         { status: 400 }
       );
     }
