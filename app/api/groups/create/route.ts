@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         const qrCodeDataUrl = await QRCode.toDataURL(joinUrl);
 
         // Redirect to holding room
-        return NextResponse.json({ code, qrCodeDataUrl, redirectUrl: `/holding-room/${code}?userName=${userName}&blobIcon=${blobIcon}`, userId: creatorId });
+        return NextResponse.json({ code, qrCodeDataUrl, redirectUrl: `/holding-room/${code}`, userId: creatorId });
     } catch (error) {
         console.error("Error creating group:", error);
         return NextResponse.json({ error: "Failed to create group" }, { status: 500 });

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 interface CreateGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onCreateGroup: (groupName: string) => void;
+    onCreateGroup: (groupName: string, leaderName: string) => void;
     initialUserName: string;
 }
 

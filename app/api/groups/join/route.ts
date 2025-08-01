@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         // when the join is successful. The server-side API no longer needs to send HTTP notification.
 
         // Redirect to holding room
-        return NextResponse.json({ success: true, message: "Group joined successfully", redirectUrl: `/holding-room/${code}?userName=${userName}&blobIcon=${blobIcon}`, userId: userIdToReturn });
+        return NextResponse.json({ success: true, message: "Group joined successfully", redirectUrl: `/holding-room/${code}`, userId: userIdToReturn });
     } catch (error) {
         console.error("Error joining group:", error);
         return NextResponse.json({ error: "Failed to join group" }, { status: 500 });

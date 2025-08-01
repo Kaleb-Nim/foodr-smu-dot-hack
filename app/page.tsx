@@ -4,10 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import GroupManager from './components/GroupManager';
 import CreateGroupModal from './components/CreateGroupModal';
+import JoinGroupModal from './components/JoinGroupModal';
 
 export default function Home() {
   const [mode, setMode] = useState<'none' | 'create' | 'join'>('none');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [userName, setUserName] = useState(''); // State to hold user name for modal
   const [currentGroupName, setCurrentGroupName] = useState(''); // State to hold group name for GroupManager
 
@@ -49,7 +51,7 @@ export default function Home() {
               Start Party
             </button>
             <button
-              onClick={() => setMode('join')}
+              onClick={() => setIsJoinModalOpen(true)}
               className="w-full py-3 bg-blue-800 text-white rounded-md text-lg font-semibold hover:bg-blue-900 transition-colors"
             >
               Join Party
@@ -68,6 +70,11 @@ export default function Home() {
           onClose={() => setIsCreateModalOpen(false)}
           onCreateGroup={handleCreateGroup}
           initialUserName={userName}
+        />
+
+        <JoinGroupModal
+          isOpen={isJoinModalOpen}
+          onClose={() => setIsJoinModalOpen(false)}
         />
 
         <div className="p-4 text-center bg-gray-200">
