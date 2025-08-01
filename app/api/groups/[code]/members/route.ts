@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from '@/lib/prisma';
 
-export async function GET(request: Request, { params }: { params: { code: string } }) {
+export async function GET(request: Request, context: { params: Promise<{ code: string }> }) {
     try {
-        console.log("Received params:", await params); // Debugging
-        const code = (await params).code;
+        const params = await context.params;
+        console.log("Received params:", params); // Debugging
+        const code = params.code;
 
         if (!code) {
             return NextResponse.json({ error: "Group code is required" }, { status: 400 });

@@ -3,9 +3,9 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
-    console.log(params);
+  const params = await context.params;
   const { code } = params;
 
   if (!code) {

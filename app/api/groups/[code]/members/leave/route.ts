@@ -6,8 +6,9 @@ interface Member {
     name: string;
 }
 
-export async function POST(req: NextRequest, { params }: { params: { code: string } }) {
-    const groupCode = (await params).code;
+export async function POST(req: NextRequest, context: { params: Promise<{ code: string }> }) {
+    const params = await context.params;
+    const groupCode = params.code;
     const { userId } = await req.json();
 
     if (!userId) {

@@ -26,7 +26,8 @@ const mapPreferenceToEnum = (preference: string): FoodRating => {
   }
 };
 
-export async function POST(req: NextRequest, { params }: { params: { groupid: string } }) {
+export async function POST(req: NextRequest, context: { params: Promise<{ groupid: string }> }) {
+  const params = await context.params;
   const sessionId = params.groupid;
 
   try {
