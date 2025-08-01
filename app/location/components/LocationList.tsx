@@ -7,14 +7,17 @@ interface Restaurant {
   distance: string;
   priceRange: string;
   imageUrl?: string;
+  lat: number;
+  lon: number;
 }
 
 interface LocationListProps {
   restaurants: Restaurant[];
   className?: string;
+  allLocations: { name: string; lat: number; lon: number; }[];
 }
 
-export function LocationList({ restaurants, className }: LocationListProps) {
+export function LocationList({ restaurants, className, allLocations }: LocationListProps) {
   if (restaurants.length === 0) {
     return (
       <div className="text-center py-12">
@@ -34,6 +37,9 @@ export function LocationList({ restaurants, className }: LocationListProps) {
             distance={restaurant.distance}
             priceRange={restaurant.priceRange}
             image={restaurant.imageUrl}
+            lat={restaurant.lat}
+            lon={restaurant.lon}
+            allLocations={allLocations}
           />
         ))}
       </div>

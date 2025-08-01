@@ -16,7 +16,10 @@ const SEARCH_RADIUS = 1000; // meters
 const RESULT_LIMIT = 50;
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!;
 
-export default function FoodMap() {
+export default function FoodMap({ selectedLocation, allLocations }: {
+  selectedLocation?: { name: string; lat: number; lon: number; };
+  allLocations?: { name: string; lat: number; lon: number; }[];
+}) {
   const DEFAULT_SMU_LAT = 1.2963;
   const DEFAULT_SMU_LON = 103.8502;
 
@@ -131,35 +134,45 @@ export default function FoodMap() {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
       >
-        {/* Center marker */}
+        {/* Current Location Marker */}
         <Marker longitude={position[0]} latitude={position[1]} color="blue" />
 
-      {/* Place markers */}
-      {places.map(p => (
-        <Marker
-          key={p.id}
-          longitude={p.lon}
-          latitude={p.lat}
-          onClick={async (evt) => {
-            evt.originalEvent.stopPropagation();
-            setSelected(p);
-            setSelectedPrice(null); // Clear previous price
+        {/* All Locations Markers */}
+        {allLocations?.map((loc, index) => (
+          <Marker
+            key={`all-${index}`}
+            longitude={loc.lon}
+            latitude={loc.lat}
+            color={selectedLocation && loc.name === selectedLocation.name ? 'red' : 'green'}
+            onClick={() => setSelected({ id: index, name: loc.name, amenity: 'restaurant', lat: loc.lat, lon: loc.lon })}
+          />
+        ))}
 
-            try {
-              const res = await fetch(`/api/prices?placeName=${encodeURIComponent(p.name)}&placeAmenity=${encodeURIComponent(p.amenity)}`);
-              const data = await res.json();
-              if (data.priceRange) {
-                setSelectedPrice(data.priceRange);
-              } else {
-                setSelectedPrice('N/A');
-              }
-            } catch (error) {
-              console.error('Error fetching price:', error);
-              setSelectedPrice('Error');
-            }
-          }}
-        />
-      ))}
+        {/* Selected Location Marker (if different from current location) */}
+        {selectedLocation && (
+          <Marker
+            longitude={selectedLocation.lon}
+            latitude={selectedLocation.lat}
+            color="red" // Highlight selected location in red
+          />
+        )}
+
+        {/* Popup for selected place */}
+        {selected && (
+          <Popup
+            longitude={selected.lon}
+            latitude={selected.lat}
+            anchor="top"
+            onClose={() => setSelected(null)}
+            closeOnClick={false}
+          >
+            <div>
+              <strong>{selected.name}</strong>
+              <p>Type: {selected.amenity}</p>
+              <p>Price: {selectedPrice !== null ? selectedPrice : 'Loading...'}</p>
+            </div>
+          </Popup>
+        )}
 
       {/* Popup for selected place */}
       {selected && (

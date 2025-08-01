@@ -123,13 +123,22 @@ export default function CuisineLocationClientPage({ cuisine }: CuisineLocationCl
   }
 
   return (
-    <LocationList restaurants={places.map(p => ({
-      name: p.name,
-      address: `${p.lat}, ${p.lon}`, // Revert to lat/lon for address, as streetName might not always be available
-      area: p.area || '', // If area is undefined, show empty string instead of 'Unknown'
-      distance: p.distance ? formatDistance(p.distance) : 'N/A',
-      priceRange: p.priceRange || 'N/A',
-      imageUrl: p.imageUrl // Pass the fetched image URL directly
-    }))} />
+    <LocationList
+      restaurants={places.map(p => ({
+        name: p.name,
+        address: `${p.lat}, ${p.lon}`,
+        area: p.area || '',
+        distance: p.distance ? formatDistance(p.distance) : 'N/A',
+        priceRange: p.priceRange || 'N/A',
+        imageUrl: p.imageUrl,
+        lat: p.lat,
+        lon: p.lon,
+      }))}
+      allLocations={places.map(p => ({
+        name: p.name,
+        lat: p.lat,
+        lon: p.lon,
+      }))}
+    />
   );
 }

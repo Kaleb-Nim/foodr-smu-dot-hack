@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MapModal } from '@/app/components/MapModal';
 
 interface LocationCardProps {
   name: string;
@@ -11,6 +12,9 @@ interface LocationCardProps {
   priceRange: string;
   image?: string;
   className?: string;
+  allLocations?: { name: string; lat: number; lon: number; }[];
+  lat: number;
+  lon: number;
 }
 
 export function LocationCard({
@@ -20,8 +24,12 @@ export function LocationCard({
   priceRange,
   image,
   className,
+  allLocations,
+  lat,
+  lon,
 }: LocationCardProps) {
   const [imageError, setImageError] = useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   // If there's an image error or no image provided, do not render the card
   if (imageError || !image) {
@@ -68,11 +76,18 @@ export function LocationCard({
             variant="outline"
             size="sm"
             className="ml-2 sm:ml-4 flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full p-0 border-2 border-orange-300 hover:border-orange-400 hover:bg-orange-50 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+            onClick={() => setIsMapModalOpen(true)}
           >
             <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 transition-transform duration-300 group-hover:rotate-12" />
           </Button>
         </div>
       </CardContent>
+      <MapModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        selectedLocation={{ name, lat, lon }}
+        allLocations={allLocations}
+      />
     </Card>
   );
 }
