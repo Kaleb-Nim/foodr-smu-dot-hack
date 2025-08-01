@@ -44,7 +44,7 @@ export function LocationCard({
       <CardContent className="p-4 sm:p-6">
         <div className="flex items-center justify-between gap-4">
           {/* Restaurant Image */}
-          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 transition-transform duration-300 group-hover:scale-105 shadow-sm">
             <img
               src={image}
               alt={name}

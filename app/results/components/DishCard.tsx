@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,6 +22,7 @@ export function DishCard({
   onSeeNearbyLocations,
   className,
 }: DishCardProps) {
+  const [showAllMembers, setShowAllMembers] = useState(false);
   const getRankBadgeColor = (rank: number) => {
     if (rank === 1) return 'bg-yellow-500 text-white';
     if (rank === 2) return 'bg-gray-400 text-white';
@@ -29,28 +30,65 @@ export function DishCard({
     return 'bg-blue-500 text-white';
   };
 
-  const renderLikedBy = (likedBy: GroupMember[]) => (
-    <div className="flex items-center flex-wrap gap-1 mt-2">
-      {likedBy.slice(0, 3).map((member) => (
-        <Avatar key={member.id} className="w-6 h-6 border-2 border-white shadow">
-          <AvatarImage src={member.avatarUrl} alt={member.name} />
-          <AvatarFallback className="bg-gray-200 text-xs font-semibold">
-            {member.name.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-      ))}
-      {likedBy.length > 3 && (
-        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-semibold text-gray-600">
-          +{likedBy.length - 3}
+  const renderLikedBy = (likedBy: GroupMember[]) => {
+    if (likedBy.length === 0) return null;
+
+    const displayMembers = showAllMembers ? likedBy : likedBy.slice(0, 2);
+    const remainingCount = likedBy.length - 2;
+
+    return (
+      <div className="mt-3">
+        <div className="flex items-center flex-wrap gap-2">
+          {displayMembers.map((member) => (
+            <div key={member.id} className="flex items-center gap-2 bg-gray-50 rounded-full px-2 py-1">
+              <Avatar className="w-8 h-8 border-2 border-white shadow-sm">
+                <AvatarImage src={member.avatarUrl} alt={member.name} />
+                <AvatarFallback className="bg-blue-100 text-sm font-semibold text-blue-700">
+                  {member.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium text-gray-700 truncate max-w-[80px]">
+                {member.name}
+              </span>
+            </div>
+          ))}
+          
+          {!showAllMembers && remainingCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAllMembers(true)}
+              className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 h-auto border-0 text-xs"
+            >
+              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                <span className="text-sm font-semibold text-gray-600">
+                  +{remainingCount}
+                </span>
+              </div>
+              <span className="text-gray-600">
+                others
+              </span>
+            </Button>
+          )}
+          
+          {showAllMembers && likedBy.length > 2 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAllMembers(false)}
+              className="bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 h-auto border-0 text-xs text-gray-600"
+            >
+              Show less
+            </Button>
+          )}
         </div>
-      )}
-      {likedBy.length > 0 && (
-        <span className="text-xs text-gray-600 ml-1">
-          {likedBy.length === 1 ? '1 person likes this' : `${likedBy.length} people like this`}
-        </span>
-      )}
-    </div>
-  );
+        
+        <div className="text-xs text-gray-500 mt-2">
+          {likedBy.length === 1 ? '1 person likes this dish' : `${likedBy.length} people like this dish`}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Card className={cn(
@@ -67,11 +105,13 @@ export function DishCard({
 
       {/* Food Image */}
       <CardHeader className="p-0 relative">
-        <img
-          src={dish.image}
-          alt={dish.name}
-          className="w-full h-48 object-cover object-center"
-        />
+        <div className="w-full aspect-[4/3] bg-gray-50 overflow-hidden">
+          <img
+            src={dish.image}
+            alt={dish.name}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        </div>
         {/* Restaurant Count Badge */}
         <div className="absolute top-3 right-3">
           <RestaurantCountWithTooltip

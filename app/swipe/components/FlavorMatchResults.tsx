@@ -1,5 +1,5 @@
 // components/FlavorMatchResults.tsx
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -41,6 +41,7 @@ export function FlavorMatchResults({
   onOrderNow,
   onStartNewSession,
 }: FlavorMatchResultsProps) {
+  const [expandedMembers, setExpandedMembers] = useState<{[key: string]: boolean}>({});
   if (!topMatch && alternativeMatches.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gradient-to-br from-red-50 to-orange-100">
@@ -57,23 +58,74 @@ export function FlavorMatchResults({
     );
   }
 
-  const renderLikedBy = (likedBy: Member[]) => (
-    <div className="flex items-center flex-wrap gap-1 mt-2">
-      {likedBy.map((member) => (
-        <Avatar key={member.id} className="w-6 h-6 border-2 border-white shadow">
-          <AvatarImage src={member.avatarUrl} alt={member.name} />
-          <AvatarFallback className="bg-gray-200 text-xs font-semibold">
-            {member.name.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-      ))}
-      {likedBy.length > 0 && (
-        <span className="text-sm text-gray-600 ml-1">
-          Liked by: {likedBy.map((m) => m.name).join(", ")}
-        </span>
-      )}
-    </div>
-  );
+  const renderLikedBy = (likedBy: Member[], foodId: string, isTopMatch: boolean = false) => {
+    if (likedBy.length === 0) return null;
+
+    const isExpanded = expandedMembers[foodId] || false;
+    const displayMembers = isExpanded ? likedBy : likedBy.slice(0, 2);
+    const remainingCount = likedBy.length - 2;
+    const toggleExpanded = () => setExpandedMembers(prev => ({ ...prev, [foodId]: !prev[foodId] }));
+
+    const bgColor = isTopMatch ? 'bg-emerald-50' : 'bg-gray-50';
+    const borderColor = isTopMatch ? 'border-emerald-200' : 'border-gray-200';
+    const avatarBg = isTopMatch ? 'bg-emerald-100' : 'bg-blue-100';
+    const avatarText = isTopMatch ? 'text-emerald-700' : 'text-blue-700';
+    const nameColor = isTopMatch ? 'text-emerald-800' : 'text-gray-700';
+    const summaryColor = isTopMatch ? 'text-emerald-700' : 'text-gray-500';
+
+    return (
+      <div className="mt-3">
+        <div className={`flex items-center ${isTopMatch ? 'justify-center' : ''} flex-wrap gap-2`}>
+          {displayMembers.map((member) => (
+            <div key={member.id} className={`flex items-center gap-2 ${bgColor} rounded-full px-2 py-1 ${isTopMatch ? `border ${borderColor}` : ''}`}>
+              <Avatar className="w-8 h-8 border-2 border-white shadow-sm">
+                <AvatarImage src={member.avatarUrl} alt={member.name} />
+                <AvatarFallback className={`${avatarBg} text-sm font-semibold ${avatarText}`}>
+                  {member.name.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <span className={`text-sm font-medium ${nameColor} truncate max-w-[80px]`}>
+                {member.name}
+              </span>
+            </div>
+          ))}
+          
+          {!isExpanded && remainingCount > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleExpanded}
+              className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 h-auto border-0 text-xs"
+            >
+              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                <span className="text-sm font-semibold text-gray-600">
+                  +{remainingCount}
+                </span>
+              </div>
+              <span className="text-gray-600">
+                others
+              </span>
+            </Button>
+          )}
+          
+          {isExpanded && likedBy.length > 2 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleExpanded}
+              className="bg-gray-100 hover:bg-gray-200 rounded-full px-3 py-1 h-auto border-0 text-xs text-gray-600"
+            >
+              Show less
+            </Button>
+          )}
+        </div>
+        
+        <div className={`text-sm ${summaryColor} mt-2 ${isTopMatch ? 'text-center font-medium' : ''}`}>
+          {likedBy.length === 1 ? (isTopMatch ? 'Loved by 1 person' : '1 person likes this') : (isTopMatch ? `Loved by ${likedBy.length} people` : `${likedBy.length} people like this`)}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
@@ -84,11 +136,13 @@ export function FlavorMatchResults({
       {topMatch && (
         <Card className="w-full max-w-2xl bg-white shadow-2xl border-4 border-emerald-500 rounded-xl overflow-hidden mb-12 animate-fade-in-up">
           <CardHeader className="p-0">
-            <img
-              src={topMatch.image}
-              alt={topMatch.name}
-              className="w-full h-72 sm:h-96 object-cover object-center"
-            />
+            <div className="w-full aspect-[4/3] bg-gray-50 overflow-hidden">
+              <img
+                src={topMatch.image}
+                alt={topMatch.name}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+            </div>
           </CardHeader>
           <CardContent className="p-6">
             <CardTitle className="text-3xl sm:text-4xl font-bold mb-2 text-center text-emerald-700">
@@ -98,7 +152,7 @@ export function FlavorMatchResults({
               from <span className="font-semibold">{topMatch.restaurant}</span>
             </CardDescription>
             <div className="flex justify-center mb-6">
-              {renderLikedBy(topMatch.likedBy)}
+              {renderLikedBy(topMatch.likedBy, topMatch.id, true)}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -138,11 +192,13 @@ export function FlavorMatchResults({
                 key={food.id}
                 className="bg-white shadow-lg border border-gray-200 rounded-lg overflow-hidden animate-fade-in"
               >
-                <img
-                  src={food.image}
-                  alt={food.name}
-                  className="w-full h-40 object-cover object-center"
-                />
+                <div className="w-full aspect-[4/3] bg-gray-50 overflow-hidden">
+                  <img
+                    src={food.image}
+                    alt={food.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
                 <CardContent className="p-4">
                   <CardTitle className="text-xl font-semibold mb-1">
                     {food.name}
@@ -150,7 +206,7 @@ export function FlavorMatchResults({
                   <CardDescription className="text-md text-gray-600 mb-2">
                     from {food.restaurant}
                   </CardDescription>
-                  {renderLikedBy(food.likedBy)}
+                  {renderLikedBy(food.likedBy, food.id)}
                   <div className="flex gap-2 mt-4">
                     <Button
                       variant="outline"
