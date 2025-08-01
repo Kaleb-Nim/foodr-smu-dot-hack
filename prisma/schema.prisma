@@ -27,9 +27,10 @@ model Group {
 }
 
 model Food {
-    id      String      @id @default(uuid())
-    name    String      @default("")
-    ratings  Ratings[]  @relation("FoodRatings")
+    id          String      @id @default(uuid())
+    name        String      @default("")
+    ratings     Ratings[]   @relation("FoodRatings")
+    image_path  String      @default("")
 }
 
 enum FoodRating {
