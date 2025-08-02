@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(uuid())
-    name      String
-    blobIcon  String?
-    ledGroup  Group?   @relation("GroupLeader")
-    memberOf  Group[]  @relation("GroupMembership")
-    ratings   Ratings[]  @relation("UserRatings")
+    id              String      @id @default(uuid())
+    name            String
+    blobIcon        String?
+    hasCompleted    Boolean     @default(false)
+    ledGroup        Group?      @relation("GroupLeader")
+    memberOf        Group[]     @relation("GroupMembership")
+    ratings         Ratings[]   @relation("UserRatings")
 }
 
 model Group {

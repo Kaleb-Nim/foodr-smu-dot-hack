@@ -41,34 +41,22 @@ export async function POST(
     // Store completion status in a UserCompletion table or use existing data
     // For now, let's use a simple approach - check if user has rated foods and assume they're done
     
-    // Get total food items that should be rated (we'll use a fixed number for simplicity)
-    const totalFoodItems = await prisma.food.count();
-    
-    // Get user's ratings count
-    const userRatingsCount = await prisma.ratings.count({
-      where: {
-        person_id_fk: userId,
-      },
-    });
-
-    // For this implementation, we'll consider a user "completed" if they have at least some ratings
-    // In a real app, you might want to track this more explicitly
-    
     // Check if all members have completed their swiping
     const allMemberIds = group.members.map(member => member.id);
     
-    // Get ratings count for each member
-    const memberRatings = await Promise.all(
+    // Get completion status for each member
+    const memberCompletionStatus = await Promise.all(
       allMemberIds.map(async (memberId) => {
-        const count = await prisma.ratings.count({
-          where: { person_id_fk: memberId },
+        const user = await prisma.user.findUnique({
+          where: { id: memberId },
+          select: { hasCompleted: true },
         });
-        return { memberId, count };
+        return { memberId, hasCompleted: user?.hasCompleted || false };
       })
     );
 
-    // Consider a member "completed" if they have at least 1 rating
-    const completedMembers = memberRatings.filter(mr => mr.count > 0);
+    // Consider a member "completed" if their hasCompleted flag is true
+    const completedMembers = memberCompletionStatus.filter(mc => mc.hasCompleted);
     const allCompleted = completedMembers.length === allMemberIds.length;
 
     // Update group completion status if all members are done
@@ -81,7 +69,7 @@ export async function POST(
 
     return NextResponse.json({
       message: "User completion status updated",
-      userCompleted: userRatingsCount > 0,
+      userCompleted: memberCompletionStatus.find(mc => mc.memberId === userId)?.hasCompleted || false,
       groupCompleted: allCompleted,
       completedCount: completedMembers.length,
       totalCount: allMemberIds.length,
