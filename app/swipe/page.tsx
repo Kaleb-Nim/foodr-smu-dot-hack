@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Swiper, { SwiperCard } from "./components/Swiper";
 import { CardTitle } from "@/components/ui/card";
+import { WaitingComponent } from "./components/WaitingComponent";
 
 const fakeSwiperCardData = [
     {
@@ -59,12 +60,12 @@ const fakeSwiperCardData = [
 ];
 
 function SwipeContent() {
-
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const userId = searchParams.get("userId");
     const groupId = searchParams.get("groupId");
+    const [showWaiting, setShowWaiting] = useState(false);
 
     const handleRequest = async (id: string, preference: string) => {
         void fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/group-sessions/${groupId}/swipe`, {
@@ -77,11 +78,31 @@ function SwipeContent() {
         });
     }
 
-    const handleAllCardsSwiped = () => {
-        // You might fetch more data, navigate to another page,
-        // or display a "You've seen everyone!" message.
-        console.log("No more cards to show! Time to load more or display an end screen.");
-        router.push(`/results?code=${groupId}`)
+    const handleAllCardsSwiped = async () => {
+        console.log("No more cards to show! User has finished swiping.");
+        
+        // Mark user as completed
+        if (userId && groupId) {
+            try {
+                await fetch(`/api/groups/${groupId}/mark-completed`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId }),
+                });
+            } catch (error) {
+                console.error("Error marking user as completed:", error);
+            }
+        }
+
+        // Show waiting component instead of directly navigating to results
+        setShowWaiting(true);
+    };
+
+    const handleAllCompleted = () => {
+        // All group members have completed, navigate to results
+        router.push(`/results?code=${groupId}`);
     };
 
     const handleSwipeLeft = (card: SwiperCard) => {
@@ -101,6 +122,17 @@ function SwipeContent() {
         // Logic for "yes" or "like"
         void handleRequest(card.id, "superlike");
     };
+
+    // Show waiting component if user has finished swiping
+    if (showWaiting && userId && groupId) {
+        return (
+            <WaitingComponent
+                groupId={groupId}
+                userId={userId}
+                onAllCompleted={handleAllCompleted}
+            />
+        );
+    }
 
     return (
         <div className="bg-[#252525] w-full h-screen flex flex-col gap-24 justify-center items-center">
