@@ -227,11 +227,11 @@ export default function FoodMap({
           >
             <div className="relative -top-14 left-1/2 -translate-x-1/2 bg-white px-2 py-1 rounded shadow-md text-sm font-semibold whitespace-nowrap text-[#252525]">
               <div>{selectedLocation.name}</div>
-              <div>
+              {/* <div>
                 {selectedLocationPrice !== null
                   ? selectedLocationPrice
                   : "Loading..."}
-              </div>
+              </div> */}
             </div>
           </Marker>
         )}
