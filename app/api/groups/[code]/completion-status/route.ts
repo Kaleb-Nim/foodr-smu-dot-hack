@@ -18,6 +18,7 @@ export async function GET(
             id: true,
             name: true,
             blobIcon: true,
+            hasCompleted: true,
           },
         },
       },
@@ -37,7 +38,7 @@ export async function GET(
         return {
           id: member.id,
           name: member.name,
-          hasCompleted: ratingsCount > 0, // Consider completed if they have any ratings
+          hasCompleted: member.hasCompleted,
           avatarUrl: member.blobIcon || undefined,
         };
       })
