@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowUp } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { MapModal } from '@/app/components/MapModal';
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { MapModal } from "@/app/components/MapModal";
 
 interface LocationCardProps {
   name: string;
@@ -12,7 +12,7 @@ interface LocationCardProps {
   priceRange: string;
   image?: string;
   className?: string;
-  allLocations?: { name: string; lat: number; lon: number; }[];
+  allLocations?: { name: string; lat: number; lon: number }[];
   lat: number;
   lon: number;
 }
@@ -22,7 +22,7 @@ export function LocationCard({
   area,
   distance,
   priceRange,
-  image,
+  image = "images/logo_foodr.png",
   className,
   allLocations,
   lat,
@@ -32,15 +32,17 @@ export function LocationCard({
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   // If there's an image error or no image provided, do not render the card
-  if (imageError || !image) {
+  if (imageError) {
     return null;
   }
 
   return (
-    <Card className={cn(
-      'bg-white shadow-md border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] group cursor-pointer',
-      className
-    )}>
+    <Card
+      className={cn(
+        "bg-white shadow-md border border-gray-200 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-[1.02] group cursor-pointer",
+        className
+      )}
+    >
       <CardContent className="p-4 sm:p-6">
         <div className="flex items-center justify-between gap-4">
           {/* Restaurant Image */}
@@ -58,9 +60,7 @@ export function LocationCard({
             <h3 className="font-semibold text-gray-900 text-lg sm:text-xl mb-2 truncate group-hover:text-blue-600 transition-colors duration-300">
               {name}
             </h3>
-            <p className="text-sm text-gray-600 mb-2 truncate">
-              {area}
-            </p>
+            <p className="text-sm text-gray-600 mb-2 truncate">{area}</p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full transition-colors duration-300 group-hover:bg-blue-50 group-hover:text-blue-700">
                 {distance}

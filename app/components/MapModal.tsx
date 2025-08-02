@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import FoodMap from './FoodMap';
+import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import FoodMap from "./FoodMap";
 
 interface MapModalProps {
   isOpen: boolean;
@@ -20,25 +26,32 @@ interface MapModalProps {
   }[];
 }
 
-export function MapModal({ isOpen, onClose, selectedLocation, allLocations }: MapModalProps) {
+export function MapModal({
+  isOpen,
+  onClose,
+  selectedLocation,
+  allLocations,
+}: MapModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] h-[600px] flex flex-col">
+      <DialogContent className="max-w-[360px] sm:max-w-[800px] h-[600px] flex flex-col bg-[#BAF6F0] rounded-lg">
         <DialogHeader>
-          <DialogTitle>Location Map</DialogTitle>
+          <DialogTitle className="text-[#252525] underline">
+            Location Map
+          </DialogTitle>
           <DialogDescription>
-            View the selected location and other places on the map.
+            View all the locations on the map. Click on a pin to see details.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex-1 w-full h-full">
+        <div className="w-full h-full">
           <FoodMap
             selectedLocation={selectedLocation}
             allLocations={allLocations}
           />
         </div>
         {selectedLocation && (
-          <div className="p-4 border-t border-gray-200">
-            <Button asChild className="w-full">
+          <div className="border-t border-gray-200 flex justify-end">
+            <Button asChild className="bg-[#F1204A] font-semibold p-6 text-lg">
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${selectedLocation.lat},${selectedLocation.lon}`}
                 target="_blank"

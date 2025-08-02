@@ -38,6 +38,8 @@ export async function GET(request: Request) {
     const placeName = searchParams.get('placeName');
     const placeAmenity = searchParams.get('placeAmenity');
 
+    console.log(`API: GET /prices with placeName=${placeName}, placeAmenity=${placeAmenity}`);
+
     if (!placeName || !placeAmenity) {
         return NextResponse.json({ error: 'Missing placeName or placeAmenity' }, { status: 400 });
     }
