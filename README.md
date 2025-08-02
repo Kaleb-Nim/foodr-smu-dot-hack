@@ -52,4 +52,4 @@ Food tinder.
 To allow groups of friends, family, or colleagues to collectively decide on a food order by combining their individual swiping preferences, leading to a mutually agreeable "Flavor Match."
 
 Tech stack:
-React, TypeScript, NextJs, TailwindCSS, Supabase, ShadCN
+React, TypeScript, NextJs, TailwindCSS, Supabase, ShadCN, Redis
