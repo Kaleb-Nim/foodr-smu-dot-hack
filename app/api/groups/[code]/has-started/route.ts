@@ -3,9 +3,10 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
-  const groupCode = (await params).code;
+  const params = await context.params;
+  const groupCode = params.code;
 
   if (!groupCode) {
     return NextResponse.json({ error: 'Group code is required' }, { status: 400 });

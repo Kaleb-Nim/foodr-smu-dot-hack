@@ -3,9 +3,10 @@ import prisma from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  context: { params: Promise<{ code: string }> }
 ) {
-  const groupCode = (await params).code;
+  const params = await context.params;
+  const groupCode = params.code;
   const { userId } = await request.json();
 
   if (!groupCode || !userId) {

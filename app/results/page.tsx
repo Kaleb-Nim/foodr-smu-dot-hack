@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EnhancedResultsDisplay } from './components/EnhancedResultsDisplay';
 import { generateSampleSwipeData, rankDishes } from '@/lib/scoring';
@@ -15,7 +15,7 @@ interface ResultsData {
   message?: string;
 }
 
-export default function ResultsPage() {
+function ResultsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const groupCode = searchParams.get('code');
@@ -125,5 +125,13 @@ export default function ResultsPage() {
         onStartNewSession={handleStartNewSession}
       />
     </div>
+  );
+}
+
+export default function ResultsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResultsContent />
+    </Suspense>
   );
 }

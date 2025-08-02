@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ const blobIcons = [
   "/images/blob9.png",
 ];
 
-export default function PickBlobPage() {
+function PickBlobContent() {
   const router = useRouter();
   const [selectedBlob, setSelectedBlob] = useState<string | null>(null);
 
@@ -98,5 +98,13 @@ export default function PickBlobPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PickBlobPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PickBlobContent />
+    </Suspense>
   );
 }

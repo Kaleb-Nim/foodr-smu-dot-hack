@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import Swiper, { SwiperCard } from "./components/Swiper";
 import { CardTitle } from "@/components/ui/card";
 
@@ -57,7 +58,7 @@ const fakeSwiperCardData = [
     }
 ];
 
-export default function Page() {
+function SwipeContent() {
 
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -115,4 +116,12 @@ export default function Page() {
             />
         </div>
     )
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SwipeContent />
+        </Suspense>
+    );
 }

@@ -15,7 +15,8 @@ import {
   AnimatePresence,
   useMotionValue,
   useTransform,
-} from "framer-motion"; // Add useAnimation
+  animate,
+} from "framer-motion";
 import { X, Heart, Star, Info } from "lucide-react";
 
 // --- Type Definitions (re-confirmed) ---
@@ -204,7 +205,7 @@ export function IndividualSwipingPhase({
 
   // New function passed down to SwipeCard to trigger its exit animation
   // and get a promise for completion.
-  const triggerCardExitAnimation = useCallback(async (action: SwipeAction) => {
+  const triggerCardExitAnimation = useCallback(async (action: SwipeAction): Promise<void> => {
     let targetX = 0;
     if (action === "dislike") {
       targetX = -window.innerWidth * 1.5; // Animate off to the left
@@ -233,14 +234,11 @@ export function IndividualSwipingPhase({
     // 3. Then, increment currentIndex to trigger AnimatePresence's exit.
 
     // Force the x value to the final destination with a quick spring to simulate a flick
-    await x.set(targetX, { type: "spring", stiffness: 300, damping: 20 });
-    // IMPORTANT: The `x.set()` with animation options (stiffness etc.) does *not*
-    // return a promise for completion. It just immediately starts an internal animation.
-    // To await its completion, we'd typically need `useAnimation` or similar.
-    // For the purpose of immediate unmount via AnimatePresence, we rely on a small timeout.
-
-    // We can rely on a fixed timeout that roughly matches the card's exit transition.
-    return new Promise((resolve) => setTimeout(resolve, 300)); // Match the exit transition duration
+    await animate(x, targetX, { type: "spring", stiffness: 300, damping: 20 });
+    
+    // animate() returns a promise that resolves when the animation completes
+    // Wait a brief moment for any visual updates before proceeding
+    return new Promise((resolve) => setTimeout(resolve, 50));
   }, [x]); // x is a dependency
 
   const handleSwipeAction = useCallback(async (action: SwipeAction) => {
@@ -285,11 +283,12 @@ export function IndividualSwipingPhase({
       // We just need to decide the action and let `handleSwipeAction` animate and advance.
       let action: SwipeAction | null = null;
 
-      if (info.offset.x > superLikeThreshold && superLikesRemaining > 0) {
+      const currentX = x.get();
+      if (currentX > superLikeThreshold && superLikesRemaining > 0) {
         action = "superLike";
-      } else if (info.offset.x > likeThreshold) {
+      } else if (currentX > likeThreshold) {
         action = "like";
-      } else if (info.offset.x < dislikeThreshold) {
+      } else if (currentX < dislikeThreshold) {
         action = "dislike";
       } else {
         // If not past threshold, snap back to center.
@@ -398,7 +397,7 @@ export function IndividualSwipingPhase({
               <Star size={32} />
             </Button>
             <Button
-              variant="success"
+              variant="default"
               size="lg"
               className="rounded-full h-16 w-16 bg-green-500 hover:bg-green-600 text-white"
               onClick={() => handleSwipeAction("like")}

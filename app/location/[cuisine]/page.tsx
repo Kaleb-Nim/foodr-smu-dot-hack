@@ -2,9 +2,9 @@ import { LocationHeader } from '../components/LocationHeader';
 import CuisineLocationClientPage from './components/CuisineLocationClientPage';
 
 interface LocationPageProps {
-  params: {
+  params: Promise<{
     cuisine: string;
-  };
+  }>;
 }
 
 export default async function CuisineLocationPage({ params }: LocationPageProps) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
@@ -22,7 +22,7 @@ const suggestedNames = [
   "Flower",
 ];
 
-export default function NameBlobPage() {
+function NameBlobContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const flow = searchParams.get("flow"); // 'join' or null
@@ -188,5 +188,13 @@ export default function NameBlobPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function NameBlobPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <NameBlobContent />
+    </Suspense>
   );
 }
