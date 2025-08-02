@@ -80,34 +80,47 @@ export async function GET(req: NextRequest, context: { params: Promise<{ code: s
       action: mapEnumToAction(rating.rating),
     }));
 
-    // 5. Get unique food items from ratings
-    const uniqueFoodItems = ratings.reduce((acc, rating) => {
+    // 5. Get unique food items from ratings and fetch cuisine
+    const uniqueFoodItemsPromises = ratings.reduce((acc, rating) => {
       if (!acc.some(item => item.id === rating.food.id)) {
-        // Debug logging to see actual database values
-        console.log('Food item:', {
-          id: rating.food.id,
-          name: rating.food.name,
-          image_path: rating.food.image_path,
-          image_path_type: typeof rating.food.image_path,
-          image_path_length: rating.food.image_path?.length
-        });
-        
-        // Use actual image_path from database, with proper fallback
-        const imagePath = rating.food.image_path && rating.food.image_path.trim() !== '' 
-          ? rating.food.image_path 
-          : '/images/placeholder-food.jpg';
-        
-        acc.push({
-          id: rating.food.id,
-          name: rating.food.name,
-          image: imagePath,
-          restaurant: 'SMU Campus', // Default restaurant
-          cuisine: 'Mixed', // Default cuisine - could be enhanced later
-          description: `Delicious ${rating.food.name}`,
-        });
+        acc.push(rating.food);
       }
       return acc;
-    }, [] as Array<{ id: string; name: string; image: string; restaurant: string; cuisine: string; description?: string }>);
+    }, [] as typeof ratings[number]['food'][]).map(async (food) => {
+      const imagePath = food.image_path && food.image_path.trim() !== ''
+        ? food.image_path
+        : '/images/placeholder-food.jpg';
+
+      let cuisine = 'Mixed'; // Default to Mixed
+      try {
+        const cuisineResponse = await fetch(`${req.nextUrl.origin}/api/cuisine`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ foodName: food.name }),
+        });
+        if (cuisineResponse.ok) {
+          const data = await cuisineResponse.json();
+          cuisine = data.cuisine;
+        } else {
+          console.warn(`Failed to fetch cuisine for ${food.name}:`, cuisineResponse.statusText);
+        }
+      } catch (cuisineError) {
+        console.error(`Error fetching cuisine for ${food.name}:`, cuisineError);
+      }
+      
+      return {
+        id: food.id,
+        name: food.name,
+        image: imagePath,
+        restaurant: 'SMU Campus', // Default restaurant
+        cuisine: cuisine,
+        description: `Delicious ${food.name}`,
+      };
+    });
+
+    const uniqueFoodItems = await Promise.all(uniqueFoodItemsPromises);
 
     // 6. Get restaurant counts
     const restaurantCounts = getAllRestaurantCounts();
