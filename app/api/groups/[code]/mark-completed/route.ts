@@ -27,6 +27,11 @@ export async function POST(
       },
     });
 
+    const setcompleted = await prisma.user.update({
+      where: {id: userId },
+      data: { hasCompleted: true },
+    })
+
     if (!group) {
       return NextResponse.json({ error: "Group not found" }, { status: 404 });
     }
@@ -55,12 +60,14 @@ export async function POST(
       })
     );
 
+    console.log(memberCompletionStatus);
+
     // Consider a member "completed" if their hasCompleted flag is true
-    const completedMembers = memberCompletionStatus.filter(mc => mc.hasCompleted);
-    const allCompleted = completedMembers.length === allMemberIds.length;
+    const incompleteMembers = memberCompletionStatus.filter(mc => !mc.hasCompleted);
+    const hasIncompleteMembers = incompleteMembers.length > 0;
 
     // Update group completion status if all members are done
-    if (allCompleted && !group.hasCompleted) {
+    if (!hasIncompleteMembers && !group.hasCompleted) {
       await prisma.group.update({
         where: { code },
         data: { hasCompleted: true },
@@ -70,9 +77,7 @@ export async function POST(
     return NextResponse.json({
       message: "User completion status updated",
       userCompleted: memberCompletionStatus.find(mc => mc.memberId === userId)?.hasCompleted || false,
-      groupCompleted: allCompleted,
-      completedCount: completedMembers.length,
-      totalCount: allMemberIds.length,
+      groupCompleted: !hasIncompleteMembers,
     });
 
   } catch (error) {
