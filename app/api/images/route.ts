@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { redis } from '@/lib/redis';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -6,6 +7,18 @@ export async function GET(request: Request) {
 
   if (!name) {
     return NextResponse.json({ error: 'Missing name parameter' }, { status: 400 });
+  }
+
+  const cacheKey = `image_url:${name}`;
+  try {
+    const cachedImageUrl = await redis.get(cacheKey);
+    if (cachedImageUrl) {
+      console.log('Serving image URL from cache:', cacheKey);
+      return NextResponse.json({ imageUrl: cachedImageUrl });
+    }
+  } catch (cacheError) {
+    console.error('Redis cache read error:', cacheError);
+    // Continue to fetch from API if cache read fails
   }
 
   const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
@@ -37,6 +50,14 @@ export async function GET(request: Request) {
     }
 
     console.log(imageUrl);
+
+    if (imageUrl) {
+      try {
+        await redis.setex(cacheKey, 24 * 60 * 60, imageUrl); // Cache for 24 hours
+      } catch (cacheError) {
+        console.error('Redis cache write error:', cacheError);
+      }
+    }
 
     return NextResponse.json({ imageUrl });
   } catch (error) {
