@@ -195,7 +195,7 @@ export default function HoldingRoomPage() {
         <div className="flex-auto flex justify-center sticky top-1.5 z-50">
           <button
             onClick={() => setShowQrPopup(true)}
-            className="flex items-center bg-[#F1204A] rounded-full px-5 py-3 shadow-lg cursor-pointer"
+            className="flex items-center bg-[#F1204A] rounded-full px-5 py-3 shadow-lg cursor-pointer max-h-[20px]"
             aria-label="Room info"
           >
             <span className="text-lg font-semibold text-[#e9e9e9]">
