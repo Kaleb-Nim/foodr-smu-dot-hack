@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CSE_ID}&q=${encodeURIComponent(name)}&searchType=image&num=1`;
+    const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CSE_ID}&q=${encodeURIComponent(`${name} restaurant`)}&searchType=image&num=1`;
     const response = await fetch(searchUrl);
     const data = await response.json();
 
