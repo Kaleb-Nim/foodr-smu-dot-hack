@@ -80,6 +80,7 @@ function SwipeContent() {
 
     const handleAllCardsSwiped = async () => {
         console.log("No more cards to show! User has finished swiping.");
+        setShowWaiting(true);
         
         // Mark user as completed
         if (userId && groupId) {
@@ -97,7 +98,6 @@ function SwipeContent() {
         }
 
         // Show waiting component instead of directly navigating to results
-        setShowWaiting(true);
     };
 
     const handleAllCompleted = () => {

@@ -192,10 +192,10 @@ export default function HoldingRoomPage() {
       <div className="flex-grow flex flex-col p-4 relative">
         {message && <p className="mb-4 text-red-600 text-center">{message}</p>}
 
-        <div className="flex-auto flex justify-center sticky top-1.5 z-50">
+        <div className="flex-auto flex justify-center sticky top-1.5 z-50 max-h-[30px]">
           <button
             onClick={() => setShowQrPopup(true)}
-            className="flex items-center bg-[#F1204A] rounded-full px-5 py-3 shadow-lg cursor-pointer max-h-[20px]"
+            className="flex items-center bg-[#F1204A] rounded-full px-5 py-3 shadow-lg cursor-pointer max-h-[30px]"
             aria-label="Room info"
           >
             <span className="text-lg font-semibold text-[#e9e9e9]">
