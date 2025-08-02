@@ -1,4 +1,3 @@
-
 // components/swiper.tsx
 "use client";
 
@@ -19,7 +18,8 @@ import { motion } from "framer-motion";
 export interface SwiperCard {
   id: string;
   name: string;
-  description?: string; image_path: string;
+  description?: string;
+  image_path: string;
 }
 
 interface SwiperProps {
@@ -44,7 +44,36 @@ const Swiper = ({ data, onSwipeLeft, onSwipeRight, onSuperLike, onFinish }: Swip
   const handleSuperLike = (index: number) => {
     gone.add(index);
     void onSuperLike(data[index]);
-  }
+    // Optionally trigger an animation for the card disappearing after super like
+    api.start((i) => {
+      if (index !== i) return;
+      const dir = Math.random() < 0.5 ? -1 : 1; // Random direction for super like dismissal
+      return {
+        x: (200 + window.innerWidth) * dir,
+        rot: dir * 10 * Math.random() * 2, // Random rotation
+        display: "none",
+        config: { friction: 50, tension: 200 },
+        onRest: () => {
+            // Check if all cards are gone after this action
+            if (gone.size === data.length) {
+                setTimeout(() => {
+                    gone.clear();
+                    api.start((i) => ({
+                        x: 0,
+                        rot: 0,
+                        scale: 1,
+                        display: "block",
+                        config: { friction: 50, tension: 500 },
+                    }));
+                    if (onFinish) {
+                        onFinish();
+                    }
+                }, 500);
+            }
+        },
+      };
+    });
+  };
 
   // Create a gesture handler
   const bind = useDrag(
@@ -75,24 +104,26 @@ const Swiper = ({ data, onSwipeLeft, onSwipeRight, onSuperLike, onFinish }: Swip
           scale,
           display: isGone ? "none" : "block", // Hide the card completely when it's gone
           config: { friction: 50, tension: down ? 800 : isGone ? 200 : 500 },
+          // onRest is crucial for knowing when an animation completes, especially for the last card
+          onRest: () => {
+            if (!down && isGone && gone.size === data.length) {
+              setTimeout(() => {
+                gone.clear();
+                api.start((j) => ({
+                  x: 0,
+                  rot: 0,
+                  scale: 1,
+                  display: "block",
+                  config: { friction: 50, tension: 500 },
+                }));
+                if (onFinish) {
+                  onFinish();
+                }
+              }, 500); // Give a brief moment before resetting
+            }
+          },
         };
       });
-
-      if (!down && gone.size === data.length) {
-        setTimeout(() => {
-          gone.clear();
-          api.start((i) => ({
-            x: 0,
-            rot: 0,
-            scale: 1,
-            display: "block",
-            config: { friction: 50, tension: 500 },
-          }));
-          if (onFinish) {
-            onFinish();
-          }
-        }, 500); // Give a brief moment before resetting
-      }
     }
   );
 
@@ -109,6 +140,7 @@ const Swiper = ({ data, onSwipeLeft, onSwipeRight, onSuperLike, onFinish }: Swip
             {...bind(i)}
             style={{
               transform: to([rot, scale], (r, s) => `perspective(1500px) rotateX(0deg) rotateY(${r / 10}deg) rotateZ(${r}deg) scale(${s})`),
+              touchAction: 'pan-y', // Crucial for mobile to prevent scroll conflicts
             }}
             className="h-full w-full cursor-grab active:cursor-grabbing bg-background"
           >
