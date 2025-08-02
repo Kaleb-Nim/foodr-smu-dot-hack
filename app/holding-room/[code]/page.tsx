@@ -148,8 +148,7 @@ export default function HoldingRoomPage() {
       typeof window !== "undefined" ? localStorage.getItem("userId") : null;
     if (!userId) {
       setMessage(
-        "User ID not found or not in browser environment. Cannot leave group."
-      );
+        "User ID not found or not in browser environment. Cannot leave group.");
       return;
     }
     try {
@@ -175,7 +174,7 @@ export default function HoldingRoomPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#252525]">
       {/* Header */}
-      <header className="flex items-center bg-[#BAF6F0] shadow-sm py-4 px-6">
+      <header className="flex items-center bg-[#BAF6F0] justify-between shadow-sm py-4 px-6">
         {/* Logo */}
 
         <img
@@ -185,31 +184,29 @@ export default function HoldingRoomPage() {
         />
 
         {/* Room Code */}
-        <div className="flex-auto flex justify-center">
-          <button
-            onClick={() => setShowQrPopup(true)}
-            className="flex items-center bg-[#FBEB35] rounded-full px-5 py-3 shadow-lg cursor-pointer"
-            aria-label="Room info"
-          >
-            <span className="text-lg font-semibold mr-4 text-[#252525]">
-              Room Code:
-            </span>
-            <span className="text-lg font-bold text-blue-600">{groupCode}</span>
-          </button>
-        </div>
 
         {/* Group Label */}
-        <div className="flex-none flex justify-end items-center bg-[#EDBBE8] px-4 py-2 rounded-lg">
-          <span className="text-lg font-semibold mr-1 text-[#252525]">
-            Group:
-          </span>
-          <span className="text-lg font-bold text-blue-600">{groupName}</span>
-        </div>
       </header>
 
       {/* Main content */}
-      <div className="flex-grow flex flex-col p-4">
+      <div className="flex-grow flex flex-col p-4 relative">
         {message && <p className="mb-4 text-red-600 text-center">{message}</p>}
+
+        <div className="flex-auto flex justify-center sticky top-1.5 z-50">
+          <button
+            onClick={() => setShowQrPopup(true)}
+            className="flex items-center bg-[#F1204A] rounded-full px-5 py-3 shadow-lg cursor-pointer"
+            aria-label="Room info"
+          >
+            <span className="text-lg font-semibold text-[#e9e9e9]">
+              QR Code: {groupCode}
+            </span>
+          </button>
+        </div>
+
+        <span className="text-center text-lg font-semibold mr-1 text-[#e9e9e9]">
+            Group: {groupName}
+        </span>
 
         {/* Members grid: 1 column on xs, 2 on md, 3 on lg, vertical first then horizontal, scroll if overflow */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-6 mb-6 overflow-y-auto">
@@ -228,25 +225,29 @@ export default function HoldingRoomPage() {
           ))}
         </div>
 
+        <div className="h-[50px]"/>
+
         {/* Action button at bottom center */}
-        <div className="mt-auto flex justify-center mb-6">
-          {leaderId &&
-          typeof window !== "undefined" &&
-          leaderId === localStorage.getItem("userId") ? (
-            <button
-              onClick={handleStartParty}
-              className="w-full max-w-xs py-3 text-lg font-semibold rounded-md bg-[#F1204A] text-white active:bg-white active:text-[#F1204A] border-2 border-[#F1204A] transition duration-400"
-            >
-              Start Group
-            </button>
-          ) : (
-            <button
-              onClick={handleLeaveGroup}
-              className="w-full max-w-xs py-3 text-lg font-semibold rounded-md bg-[#F1204A] text-white active:bg-white active:text-[#F1204A] border-2 border-[#F1204A] transition duration-400"
-            >
-              Leave Group
-            </button>
-          )}
+        <div className="fixed inset-x-0 bottom-0">
+          <div className="mt-auto flex justify-center mb-6">
+            {leaderId &&
+            typeof window !== "undefined" &&
+            leaderId === localStorage.getItem("userId") ? (
+              <button
+                onClick={handleStartParty}
+                className="w-full max-w-xs py-3 text-lg font-semibold rounded-md bg-[#F1204A] text-white active:bg-white active:text-[#F1204A] border-2 border-[#F1204A] transition duration-400"
+              >
+                Start Group
+              </button>
+            ) : (
+              <button
+                onClick={handleLeaveGroup}
+                className="w-full max-w-xs py-3 text-lg font-semibold rounded-md bg-[#F1204A] text-white active:bg-white active:text-[#F1204A] border-2 border-[#F1204A] transition duration-400"
+              >
+                Leave Group
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
