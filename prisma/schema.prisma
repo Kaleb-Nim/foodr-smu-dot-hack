@@ -25,6 +25,7 @@ model Group {
     leader          User      @relation("GroupLeader", fields: [leader_id_fk], references: [id])
     members         User[]    @relation("GroupMembership")
     hasStarted      Boolean   @default(false)
+    hasCompleted    Boolean   @default(false)
 }
 
 model Food {
