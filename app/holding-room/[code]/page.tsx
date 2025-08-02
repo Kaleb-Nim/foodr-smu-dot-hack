@@ -108,7 +108,7 @@ export default function HoldingRoomPage() {
       } else {
         clearInterval(intervalId); // Stop polling if redirected
       }
-    }, 3000); // Poll every 3 seconds
+    }, 1000); // Poll every 1 seconds
 
     return () => clearInterval(intervalId);
   }, [groupCode, router]);
