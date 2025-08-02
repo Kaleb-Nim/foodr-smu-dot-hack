@@ -121,7 +121,7 @@ export function EnhancedResultsDisplay({
         {/* Separator */}
         <Separator className="my-8 opacity-25" />
         <div>
-        <div className="h-screen flex justify-center items-center">
+        <div className="min-h-screen flex justify-center items-center">
           <div>
             {remainingDishes.length > 0 && (
               <div className="mb-8">
