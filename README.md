@@ -12,7 +12,7 @@ Foodr solves the age-old problem of group indecisiveness when choosing where to 
 This frustrating cycle of indecision wastes time and tests patience, especially in group settings with friends, family, or colleagues.
 
 **The Solution:**
-Foodr transforms group food decision-making into an engaging, democratic process where everyone's preferences matter. Through individual swiping and intelligent scoring algorithms, groups reach consensus efficiently and fairly.
+Foodr transforms group food decision-making into an engaging, GRINDR LIKE SWIPING process where everyone's preferences matter. Through individual swiping and AI scoring algorithms, groups reach consensus efficiently + FUN.
 
 ## 🚀 Tech Stack
 
