@@ -25,7 +25,6 @@ const RESULT_LIMIT = 50;
 const DEFAULT_SMU_LAT = 1.2963;
 const DEFAULT_SMU_LON = 103.8502;
 
-
 export default function CuisineLocationClientPage({ cuisine }: CuisineLocationClientPageProps) {
   const decodedCuisine = decodeURIComponent(cuisine);
 
@@ -37,20 +36,32 @@ export default function CuisineLocationClientPage({ cuisine }: CuisineLocationCl
     const fetchPlaces = async (latitude: number, longitude: number, cuisineTag: string) => {
       setLoading(true);
       setError(null);
-      const query = `
-        [out:json][timeout:25];
-        (
-          node["amenity"="restaurant"]["cuisine"="${cuisineTag}"](around:${SEARCH_RADIUS},${latitude},${longitude});
-          way["amenity"="restaurant"]["cuisine"="${cuisineTag}"](around:${SEARCH_RADIUS},${latitude},${longitude});
-          relation["amenity"="restaurant"]["cuisine"="${cuisineTag}"](around:${SEARCH_RADIUS},${latitude},${longitude});
-        );
-        out body;
-        out tags;
-        >;
-        out skel qt;
-      `;
 
+      const cacheKey = `cuisine_locations:${cuisineTag}:${latitude}:${longitude}`;
       try {
+        const cachedResponse = await fetch(`/api/redis-cache?key=${cacheKey}`);
+        const cachedData = await cachedResponse.json();
+        if (cachedData.value) {
+          console.log('Serving from cache:', cacheKey);
+          console.log(cachedData.value);
+          setPlaces(cachedData.value as Place[]);
+          setLoading(false);
+          return;
+        }
+
+        const query = `
+          [out:json][timeout:25];
+          (
+            node["amenity"="restaurant"]["cuisine"="${cuisineTag}"](around:${SEARCH_RADIUS},${latitude},${longitude});
+            way["amenity"="restaurant"]["cuisine"="${cuisineTag}"](around:${SEARCH_RADIUS},${latitude},${longitude});
+            relation["amenity"="restaurant"]["cuisine"="${cuisineTag}"](around:${SEARCH_RADIUS},${latitude},${longitude});
+          );
+          out body;
+          out tags;
+          >;
+          out skel qt;
+        `;
+
         const res = await fetch('https://overpass-api.de/api/interpreter', {
           method: 'POST',
           body: query.trim(),
@@ -86,6 +97,14 @@ export default function CuisineLocationClientPage({ cuisine }: CuisineLocationCl
         // Filter out places without an image URL
         const filteredPlaces = rawEls.filter(place => place.imageUrl); // Filter out places with null imageUrl
         filteredPlaces.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+
+        await fetch('/api/redis-cache', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ key: cacheKey, value: JSON.stringify(filteredPlaces), ex: 3600 }),
+        });
         setPlaces(filteredPlaces);
       } catch (err) {
         console.error('Overpass fetch error:', err);
