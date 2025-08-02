@@ -67,7 +67,7 @@ function SwipeContent() {
     const groupId = searchParams.get("groupId");
 
     const handleRequest = async (id: string, preference: string) => {
-        void fetch(`http://localhost:3000/api/group-sessions/${groupId}/swipe`, {
+        void fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/group-sessions/${groupId}/swipe`, {
             method: "POST",
             body: JSON.stringify({
                 "userId": userId,
