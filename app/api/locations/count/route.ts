@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     }
 
     // If not in cache, fetch from source
-    const restaurantCounts = getAllRestaurantCounts();
+    const restaurantCounts = getAllRestaurantCounts(); 
 
     // Store in cache with an expiration
     await redis.setex(CACHE_KEY, CACHE_EXPIRATION_SECONDS, restaurantCounts);
