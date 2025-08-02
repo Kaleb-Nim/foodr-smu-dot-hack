@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient, FoodRating } from '@prisma/client';
 import { calculateWeightedScore, rankDishes } from '@/lib/scoring';
-import { getAllRestaurantCounts } from '@/data/smu-restaurants';
 import { SwipeData, GroupMember, EnhancedMatchedFoodItem } from '@/lib/types';
 
 const prisma = new PrismaClient();
@@ -122,8 +121,17 @@ export async function GET(req: NextRequest, context: { params: Promise<{ code: s
 
     const uniqueFoodItems = await Promise.all(uniqueFoodItemsPromises);
 
-    // 6. Get restaurant counts
-    const restaurantCounts = getAllRestaurantCounts();
+    // 6. Fetch restaurant counts dynamically
+    const restaurantCountsResponse = await fetch(`${req.nextUrl.origin}/api/locations/count`);
+    if (!restaurantCountsResponse.ok) {
+      console.error("Failed to fetch restaurant counts:", restaurantCountsResponse.statusText);
+      // Fallback to empty counts or handle error appropriately
+      return NextResponse.json(
+        { error: "Failed to fetch restaurant counts." },
+        { status: 500 }
+      );
+    }
+    const restaurantCounts = await restaurantCountsResponse.json();
 
     // 7. Calculate top dishes using existing scoring logic
     const topDishes = rankDishes(swipes, members, uniqueFoodItems, restaurantCounts, 8);

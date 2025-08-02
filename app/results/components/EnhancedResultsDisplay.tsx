@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { DishCard } from './DishCard';
@@ -12,6 +12,8 @@ interface EnhancedResultsDisplayProps {
   onStartNewSession?: () => void;
 }
 
+type RestaurantCounts = Record<string, number>;
+
 export function EnhancedResultsDisplay({
   topDishes,
   groupMembers,
@@ -19,7 +21,29 @@ export function EnhancedResultsDisplay({
   onStartNewSession,
 }: EnhancedResultsDisplayProps) {
   const [showAllDishes, setShowAllDishes] = useState(false);
-  
+  const [restaurantCounts, setRestaurantCounts] = useState<RestaurantCounts>({});
+  const [loadingCounts, setLoadingCounts] = useState(true);
+
+  useEffect(() => {
+    const fetchRestaurantCounts = async () => {
+      try {
+        const response = await fetch('/api/locations/count');
+        if (response.ok) {
+          const data = await response.json();
+          setRestaurantCounts(data);
+        } else {
+          console.error('Failed to fetch restaurant counts:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching restaurant counts:', error);
+      } finally {
+        setLoadingCounts(false);
+      }
+    };
+
+    fetchRestaurantCounts();
+  }, []);
+
   if (topDishes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-[#252525]">
@@ -73,6 +97,7 @@ export function EnhancedResultsDisplay({
                   maxScore={maxScore}
                   onSeeNearbyLocations={onSeeNearbyLocations}
                   className="border-4 border-yellow-400 shadow-2xl transform scale-105"
+                  restaurantCounts={restaurantCounts} // Pass the new prop
                 />
               </div>
             </div>
@@ -117,6 +142,7 @@ export function EnhancedResultsDisplay({
                       rank={index + 2}
                       maxScore={maxScore}
                       onSeeNearbyLocations={onSeeNearbyLocations}
+                      restaurantCounts={restaurantCounts} // Pass the new prop
                     />
                   ))}
                 </div>

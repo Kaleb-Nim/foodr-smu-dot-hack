@@ -14,6 +14,7 @@ interface DishCardProps {
   maxScore: number;
   onSeeNearbyLocations: (cuisine: string) => void;
   className?: string;
+  restaurantCounts: Record<string, number>; // Add this prop
 }
 
 export function DishCard({
@@ -22,9 +23,11 @@ export function DishCard({
   maxScore,
   onSeeNearbyLocations,
   className,
+  restaurantCounts, // Destructure the new prop
 }: DishCardProps) {
   const [showAllMembers, setShowAllMembers] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const currentRestaurantCount = restaurantCounts[dish.cuisine] || 0;
   const getRankBadgeColor = (rank: number) => {
     return 'bg-[#F1204A] text-white';
   };
@@ -104,7 +107,7 @@ export function DishCard({
         {/* Restaurant Count Badge */}
         <div className="absolute top-3 right-3">
           <RestaurantCountWithTooltip
-            count={dish.restaurantCount}
+            count={currentRestaurantCount}
             cuisine={dish.cuisine}
             size="sm"
             showTooltip={true}
@@ -155,7 +158,7 @@ export function DishCard({
             onClick={() => handleClick(dish.cuisine)}
             className="w-full bg-[#F1204A] shadow-lg hover:bg-[#2DCCD3] hover:text-black transition-all text-white"
           >
-            See nearby locations ({dish.restaurantCount})
+            See nearby locations ({currentRestaurantCount})
           </Button>
         }
         </div>
